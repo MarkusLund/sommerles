@@ -1,8 +1,8 @@
 node_modules
 dist
-server/sommerles.db
-server/sommerles.db-shm
-server/sommerles.db-wal
+.wrangler
+server
+.dev.vars
 .playwright-mcp
 .claude
 *.log

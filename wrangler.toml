@@ -1,0 +1,17 @@
+name = "sommerles"
+main = "worker/index.js"
+compatibility_date = "2025-01-01"
+
+# Statiske filer (Vite-bygget i ./dist) serveres direkte av Cloudflare.
+# Worker-en kjører kun for /api/*; alt annet faller tilbake til index.html (SPA).
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*"]
+
+# D1 = SQLite. database_id fylles inn av `npm run db:create`.
+[[d1_databases]]
+binding = "DB"
+database_name = "sommerles"
+database_id = "b7f35951-ec4d-4eab-b699-e2f1d16a6b4b"

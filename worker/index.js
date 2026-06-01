@@ -1,6 +1,4 @@
 import { Hono } from 'hono'
-import { serve } from '@hono/node-server'
-import db from './db.js'
 import { xpForReading, statsFromReadings, levelFromXp, AVATARS } from '../src/shared/game.js'
 import { searchBooks } from './books.js'
 
@@ -11,22 +9,21 @@ function nowIso() {
   return new Date().toISOString()
 }
 
-function readingsForChild(childId) {
-  return db
+async function readingsForChild(db, childId) {
+  const { results } = await db
     .prepare('SELECT * FROM readings WHERE child_id = ? ORDER BY created_at DESC, id DESC')
-    .all(childId)
-    .map((r) => ({ ...r, finished: !!r.finished }))
+    .bind(childId)
+    .all()
+  return results.map((r) => ({ ...r, finished: !!r.finished }))
 }
 
-// Beregn avledet tilstand (XP, level, låst-opp avatar) og oppdater valgt avatar
-// hvis den ikke lenger er lovlig (sjelden, men trygt).
-function decorateChild(child) {
-  const readings = readingsForChild(child.id)
+// Beregn avledet tilstand (XP, level, låst-opp avatar).
+async function decorateChild(db, child) {
+  const readings = await readingsForChild(db, child.id)
   const stats = statsFromReadings(readings)
   const level = levelFromXp(stats.totalXp)
   return {
     ...child,
-    finished: undefined,
     stats,
     level,
     unlockedAvatars: AVATARS.filter((a) => a.level <= level.level).map((a) => a.emoji),
@@ -35,7 +32,7 @@ function decorateChild(child) {
 
 // ── Boksøk ──────────────────────────────────────────────────────────────────
 // Nasjonalbiblioteket primært (best norsk dekning) med fuzzy-fallback, og
-// Open Library som fallback for utenlandske titler. Se server/books.js.
+// Open Library som fallback for utenlandske titler. Se worker/books.js.
 app.get('/api/books/search', async (c) => {
   const q = (c.req.query('q') || '').trim()
   if (q.length < 2) return c.json([])
@@ -47,64 +44,68 @@ app.get('/api/books/search', async (c) => {
 })
 
 // ── Barn ──────────────────────────────────────────────────────────────────
-app.get('/api/children', (c) => {
-  const rows = db.prepare('SELECT * FROM children ORDER BY created_at ASC').all()
-  return c.json(rows.map(decorateChild))
+app.get('/api/children', async (c) => {
+  const db = c.env.DB
+  const { results } = await db.prepare('SELECT * FROM children ORDER BY created_at ASC').all()
+  return c.json(await Promise.all(results.map((r) => decorateChild(db, r))))
 })
 
 app.post('/api/children', async (c) => {
+  const db = c.env.DB
   const body = await c.req.json()
   const name = (body.name || '').toString().trim()
   const age = parseInt(body.age, 10)
   if (!name) return c.json({ error: 'Navn er påkrevd' }, 400)
   if (!Number.isFinite(age) || age < 1 || age > 120) return c.json({ error: 'Ugyldig alder' }, 400)
   const avatar = AVATARS[0].emoji
-  const info = db
-    .prepare('INSERT INTO children (name, age, avatar, created_at) VALUES (?, ?, ?, ?)')
-    .run(name, age, avatar, nowIso())
-  const child = db.prepare('SELECT * FROM children WHERE id = ?').get(info.lastInsertRowid)
-  return c.json(decorateChild(child), 201)
+  const child = await db
+    .prepare('INSERT INTO children (name, age, avatar, created_at) VALUES (?, ?, ?, ?) RETURNING *')
+    .bind(name, age, avatar, nowIso())
+    .first()
+  return c.json(await decorateChild(db, child), 201)
 })
 
 app.patch('/api/children/:id', async (c) => {
+  const db = c.env.DB
   const id = c.req.param('id')
   const body = await c.req.json()
-  const child = db.prepare('SELECT * FROM children WHERE id = ?').get(id)
+  const child = await db.prepare('SELECT * FROM children WHERE id = ?').bind(id).first()
   if (!child) return c.json({ error: 'Fant ikke barnet' }, 404)
 
   // Bytte avatar – sjekk at den er låst opp.
   if (body.avatar != null) {
-    const readings = readingsForChild(id)
+    const readings = await readingsForChild(db, id)
     const level = levelFromXp(statsFromReadings(readings).totalXp).level
     const avatarDef = AVATARS.find((a) => a.emoji === body.avatar)
     if (!avatarDef) return c.json({ error: 'Ukjent avatar' }, 400)
     if (avatarDef.level > level) return c.json({ error: 'Avataren er ikke låst opp ennå' }, 403)
-    db.prepare('UPDATE children SET avatar = ? WHERE id = ?').run(body.avatar, id)
+    await db.prepare('UPDATE children SET avatar = ? WHERE id = ?').bind(body.avatar, id).run()
   }
   if (body.name != null && body.name.trim()) {
-    db.prepare('UPDATE children SET name = ? WHERE id = ?').run(body.name.trim(), id)
+    await db.prepare('UPDATE children SET name = ? WHERE id = ?').bind(body.name.trim(), id).run()
   }
   if (body.age != null && Number.isFinite(parseInt(body.age, 10))) {
-    db.prepare('UPDATE children SET age = ? WHERE id = ?').run(parseInt(body.age, 10), id)
+    await db.prepare('UPDATE children SET age = ? WHERE id = ?').bind(parseInt(body.age, 10), id).run()
   }
-  const updated = db.prepare('SELECT * FROM children WHERE id = ?').get(id)
-  return c.json(decorateChild(updated))
+  const updated = await db.prepare('SELECT * FROM children WHERE id = ?').bind(id).first()
+  return c.json(await decorateChild(db, updated))
 })
 
-app.delete('/api/children/:id', (c) => {
-  const id = c.req.param('id')
-  db.prepare('DELETE FROM children WHERE id = ?').run(id)
+app.delete('/api/children/:id', async (c) => {
+  const db = c.env.DB
+  await db.prepare('DELETE FROM children WHERE id = ?').bind(c.req.param('id')).run()
   return c.json({ ok: true })
 })
 
 // ── Lesinger ──────────────────────────────────────────────────────────────
-app.get('/api/children/:id/readings', (c) => {
-  return c.json(readingsForChild(c.req.param('id')))
+app.get('/api/children/:id/readings', async (c) => {
+  return c.json(await readingsForChild(c.env.DB, c.req.param('id')))
 })
 
 app.post('/api/children/:id/readings', async (c) => {
+  const db = c.env.DB
   const childId = c.req.param('id')
-  const child = db.prepare('SELECT * FROM children WHERE id = ?').get(childId)
+  const child = await db.prepare('SELECT * FROM children WHERE id = ?').bind(childId).first()
   if (!child) return c.json({ error: 'Fant ikke barnet' }, 404)
 
   const body = await c.req.json()
@@ -120,23 +121,24 @@ app.post('/api/children/:id/readings', async (c) => {
   if (amount < 1) return c.json({ error: 'Antall må være minst 1' }, 400)
 
   const xp = xpForReading({ unit, amount, finished: !!finished })
-  const info = db
+  const reading = await db
     .prepare(
       `INSERT INTO readings (child_id, title, author, type, unit, amount, pages, finished, xp, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
     )
-    .run(childId, title, author, type, unit, amount, pages, finished, xp, nowIso())
+    .bind(childId, title, author, type, unit, amount, pages, finished, xp, nowIso())
+    .first()
 
-  const reading = db.prepare('SELECT * FROM readings WHERE id = ?').get(info.lastInsertRowid)
-  const updatedChild = decorateChild(child)
-  return c.json({ reading: { ...reading, finished: !!reading.finished }, child: updatedChild, gainedXp: xp }, 201)
+  const updatedChild = await decorateChild(db, child)
+  return c.json(
+    { reading: { ...reading, finished: !!reading.finished }, child: updatedChild, gainedXp: xp },
+    201
+  )
 })
 
-app.delete('/api/readings/:id', (c) => {
-  db.prepare('DELETE FROM readings WHERE id = ?').run(c.req.param('id'))
+app.delete('/api/readings/:id', async (c) => {
+  await c.env.DB.prepare('DELETE FROM readings WHERE id = ?').bind(c.req.param('id')).run()
   return c.json({ ok: true })
 })
 
-const port = 3001
-serve({ fetch: app.fetch, port })
-console.log(`📚 Sommerles-server kjører på http://localhost:${port}`)
+export default app
