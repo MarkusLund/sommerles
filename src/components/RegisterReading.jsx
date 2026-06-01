@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { READING_TYPES, UNITS, xpForReading } from '../shared/game.js'
+import { READING_TYPES, UNITS, xpForReading, estimateWords, estimateMinutes } from '../shared/game.js'
+import BookSearch from './BookSearch.jsx'
 
 export default function RegisterReading({ onAdd }) {
   const [title, setTitle] = useState('')
@@ -9,10 +10,25 @@ export default function RegisterReading({ onAdd }) {
   const [amount, setAmount] = useState('')
   const [pages, setPages] = useState('')
   const [finished, setFinished] = useState(false)
+  const [book, setBook] = useState(null) // valgt ekte bok (for omslag + estimat)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
   const preview = xpForReading({ unit, amount: Number(amount) || 0, finished })
+  const pagesNum = Number(pages) || 0
+  const estWords = estimateWords(pagesNum)
+  const estMinutes = estimateMinutes(pagesNum)
+
+  function selectBook(b) {
+    setBook(b)
+    setTitle(b.title || '')
+    setAuthor(b.author || '')
+    if (b.pages) setPages(String(b.pages))
+  }
+
+  function clearBook() {
+    setBook(null)
+  }
 
   async function submit(e) {
     e.preventDefault()
@@ -33,6 +49,7 @@ export default function RegisterReading({ onAdd }) {
       setAmount('')
       setPages('')
       setFinished(false)
+      setBook(null)
     } catch (err) {
       setError(err.message)
     } finally {
@@ -44,14 +61,37 @@ export default function RegisterReading({ onAdd }) {
     <form className="card register" onSubmit={submit}>
       <h2>➕ Registrer lesing</h2>
 
+      <BookSearch onSelect={selectBook} />
+
+      {book && (
+        <div className="selected-book">
+          {book.cover ? (
+            <img src={book.cover} alt="" className="selected-cover" />
+          ) : (
+            <div className="selected-cover placeholder">📕</div>
+          )}
+          <div className="selected-info">
+            <div className="selected-title">{book.title}</div>
+            <div className="selected-meta">{book.author || 'Ukjent forfatter'}</div>
+            <div className="selected-stats">
+              {book.pages ? `${book.pages} sider` : 'Ukjent sidetall'}
+              {book.words ? ` · ca. ${book.words.toLocaleString('no-NO')} ord` : ''}
+            </div>
+          </div>
+          <button type="button" className="selected-clear" onClick={clearBook} title="Fjern">
+            ✕
+          </button>
+        </div>
+      )}
+
       <label>
         Boktittel
-        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Hva leste du?" maxLength={120} />
+        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Hva leste du?" maxLength={160} />
       </label>
 
       <label>
         Forfatter <span className="optional">(valgfritt)</span>
-        <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="Hvem skrev den?" maxLength={120} />
+        <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="Hvem skrev den?" maxLength={160} />
       </label>
 
       <div className="field-label">Hvordan leste du?</div>
@@ -104,6 +144,25 @@ export default function RegisterReading({ onAdd }) {
           />
         </label>
       </div>
+
+      {pagesNum > 0 && (estWords || estMinutes) && (
+        <div className="estimate">
+          📐 Anslag for hele boka: {estWords ? `ca. ${estWords.toLocaleString('no-NO')} ord` : ''}
+          {estMinutes ? ` · ca. ${estMinutes} min lesetid` : ''}
+          {estMinutes && (
+            <button
+              type="button"
+              className="estimate-btn"
+              onClick={() => {
+                setUnit('minutter')
+                setAmount(String(estMinutes))
+              }}
+            >
+              Bruk som minutter
+            </button>
+          )}
+        </div>
+      )}
 
       <label className="checkbox">
         <input type="checkbox" checked={finished} onChange={(e) => setFinished(e.target.checked)} />

@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { serve } from '@hono/node-server'
 import db from './db.js'
-import { xpForReading, statsFromReadings, levelFromXp, AVATARS } from '../src/shared/game.js'
+import { xpForReading, statsFromReadings, levelFromXp, AVATARS, estimateWords } from '../src/shared/game.js'
 
 const app = new Hono()
 
@@ -31,6 +31,47 @@ function decorateChild(child) {
     unlockedAvatars: AVATARS.filter((a) => a.level <= level.level).map((a) => a.emoji),
   }
 }
+
+// ── Boksøk (Open Library) ───────────────────────────────────────────────────
+// Proxy mot Open Library så vi slipper CORS og kan normalisere + estimere ord.
+app.get('/api/books/search', async (c) => {
+  const q = (c.req.query('q') || '').trim()
+  if (q.length < 2) return c.json([])
+
+  const url =
+    'https://openlibrary.org/search.json?' +
+    new URLSearchParams({
+      q,
+      limit: '10',
+      fields: 'key,title,author_name,number_of_pages_median,cover_i,first_publish_year,language',
+    })
+
+  try {
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'Sommerles-demo/0.1 (laeringsprosjekt)' },
+      signal: AbortSignal.timeout(8000),
+    })
+    if (!res.ok) return c.json({ error: 'Boksøk feilet' }, 502)
+    const data = await res.json()
+    const books = (data.docs || [])
+      .filter((b) => b.title)
+      .map((b) => {
+        const pages = b.number_of_pages_median || null
+        return {
+          id: b.key,
+          title: b.title,
+          author: (b.author_name || []).slice(0, 2).join(', ') || null,
+          pages,
+          words: estimateWords(pages),
+          cover: b.cover_i ? `https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg` : null,
+          year: b.first_publish_year || null,
+        }
+      })
+    return c.json(books)
+  } catch (err) {
+    return c.json({ error: 'Kunne ikke nå boktjenesten' }, 502)
+  }
+})
 
 // ── Barn ──────────────────────────────────────────────────────────────────
 app.get('/api/children', (c) => {

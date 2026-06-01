@@ -181,6 +181,52 @@ label input:focus { border-color: var(--accent2); }
 .xp-preview { font-size: 1.1rem; font-weight: 700; color: var(--ink-soft); }
 .xp-preview strong { color: var(--accent); font-size: 1.3rem; }
 
+/* ── Book search ─────────────────────────────────────── */
+.book-search { position: relative; }
+.search-input-wrap { position: relative; }
+.search-input-wrap input {
+  width: 100%; border: 2px solid #e6e5ef; border-radius: 12px; padding: 11px 38px 11px 13px;
+  font-size: 1rem; font-weight: 600; outline: none; transition: border-color 0.15s;
+}
+.search-input-wrap input:focus { border-color: var(--accent2); }
+.search-spinner { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); }
+.search-hint { font-size: 0.85rem; color: var(--ink-soft); font-weight: 600; margin: 6px 0 0; }
+.search-results {
+  list-style: none; margin: 6px 0 0; padding: 6px; position: absolute; z-index: 20; left: 0; right: 0;
+  background: #fff; border-radius: 14px; box-shadow: var(--shadow); max-height: 340px; overflow-y: auto;
+  border: 1px solid #eceaf5;
+}
+.search-result { display: flex; gap: 12px; padding: 8px; border-radius: 10px; cursor: pointer; align-items: center; }
+.search-result:hover { background: #f3f2fb; }
+.result-cover { width: 38px; height: 54px; object-fit: cover; border-radius: 4px; flex-shrink: 0; background: #eee; }
+.result-cover.placeholder { display: grid; place-items: center; font-size: 1.4rem; }
+.result-info { min-width: 0; }
+.result-title { font-weight: 800; font-size: 0.95rem; }
+.result-meta { font-size: 0.8rem; color: var(--ink-soft); font-weight: 600; }
+.result-stats { font-size: 0.78rem; color: var(--accent2); font-weight: 800; margin-top: 2px; }
+
+.selected-book {
+  display: flex; gap: 14px; align-items: center; background: #eaf2ff; border-radius: 14px; padding: 12px;
+  position: relative; border: 2px solid #cfe0ff;
+}
+.selected-cover { width: 46px; height: 66px; object-fit: cover; border-radius: 5px; flex-shrink: 0; }
+.selected-cover.placeholder { display: grid; place-items: center; font-size: 1.8rem; background: #fff; }
+.selected-title { font-weight: 800; }
+.selected-meta { font-size: 0.85rem; color: var(--ink-soft); font-weight: 600; }
+.selected-stats { font-size: 0.82rem; color: var(--accent2); font-weight: 800; margin-top: 3px; }
+.selected-clear { position: absolute; top: 8px; right: 8px; border: none; background: rgba(45,42,74,0.08); color: var(--ink-soft); width: 24px; height: 24px; border-radius: 50%; }
+.selected-clear:hover { background: var(--accent); color: #fff; }
+
+.estimate {
+  background: #fff6d6; border-radius: 12px; padding: 10px 14px; font-size: 0.88rem; font-weight: 700;
+  color: #8a6d00; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.estimate-btn {
+  margin-left: auto; background: var(--accent2); color: #fff; border: none; border-radius: 999px;
+  padding: 5px 12px; font-weight: 800; font-size: 0.8rem;
+}
+.estimate-btn:hover { filter: brightness(1.05); }
+
 /* ── Trophies ────────────────────────────────────────── */
 .trophies-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
 .trophies-count { background: var(--bg1); color: var(--ink); font-weight: 800; padding: 4px 14px; border-radius: 999px; font-size: 0.85rem; }

@@ -25,6 +25,21 @@ export const XP_PER_MINUTE = 1
 export const XP_PER_PAGE = 2
 export const XP_FINISH_BONUS = 25
 
+// Estimat brukt når vi henter ekte bøker fra bok-API-et.
+export const WORDS_PER_PAGE = 275 // grovt snitt for å anslå ordmengde fra sidetall
+export const READING_WPM = 150 // ord per minutt for et barn – anslår lesetid
+
+export function estimateWords(pages) {
+  if (!pages) return null
+  return Math.round((pages * WORDS_PER_PAGE) / 10) * 10
+}
+
+export function estimateMinutes(pages) {
+  const words = estimateWords(pages)
+  if (!words) return null
+  return Math.max(1, Math.round(words / READING_WPM))
+}
+
 export const READING_TYPES = [
   { id: 'lese', label: 'Leste selv', emoji: '📖' },
   { id: 'lydbok', label: 'Hørte lydbok', emoji: '🎧' },

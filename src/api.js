@@ -11,6 +11,7 @@ async function req(url, options) {
 }
 
 export const api = {
+  searchBooks: (q) => req(`/api/books/search?q=${encodeURIComponent(q)}`),
   listChildren: () => req('/api/children'),
   createChild: (name, age) =>
     req('/api/children', { method: 'POST', body: JSON.stringify({ name, age }) }),
