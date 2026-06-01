@@ -108,10 +108,10 @@ export default function App() {
 
       <nav className="tabs">
         <button className={view === 'profil' ? 'active' : ''} onClick={() => setView('profil')}>
-          🏅 Min profil
+          🏅 Profil
         </button>
         <button className={view === 'lesing' ? 'active' : ''} onClick={() => setView('lesing')}>
-          ➕ Registrer lesing
+          ➕ Ny lesing
         </button>
         <button className={view === 'avatarer' ? 'active' : ''} onClick={() => setView('avatarer')}>
           🎭 Avatarer

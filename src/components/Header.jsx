@@ -12,9 +12,11 @@ export default function Header({ child, onBack }) {
 
   return (
     <header className="header">
-      <button className="switch-btn" onClick={onBack}>
-        ↩ Bytt barn
-      </button>
+      <div className="header-top">
+        <button className="switch-btn" onClick={onBack}>
+          ↩ Bytt barn
+        </button>
+      </div>
 
       <div className="header-main">
         <div className="header-avatar">{child.avatar}</div>
