@@ -1,13 +1,15 @@
 name = "sommerles"
 main = "worker/index.js"
 compatibility_date = "2025-01-01"
+# Behold gratis workers.dev-URL aktiv (ellers slås den av når en route finnes).
+workers_dev = true
 
-# Eget domene. Krever at sonen sommerles.haavelund.no er lagt til og aktiv
-# i Cloudflare (NS delegert fra Webhuset). Deploy feiler ufarlig hvis sonen
-# ikke er aktiv ennå – kjør `npm run deploy` på nytt når den er det.
-routes = [
-  { pattern = "sommerles.haavelund.no", custom_domain = true }
-]
+# Eget domene via Workers Custom Domain krever at sonen ligger i Cloudflare.
+# Vi bruker i stedet en redirect fra Webhuset til workers.dev-URL-en, så denne
+# står deaktivert. Skru den på igjen hvis du senere flytter sonen til Cloudflare.
+# routes = [
+#   { pattern = "sommerles.haavelund.no", custom_domain = true }
+# ]
 
 # Statiske filer (Vite-bygget i ./dist) serveres direkte av Cloudflare.
 # Worker-en kjører kun for /api/*; alt annet faller tilbake til index.html (SPA).
