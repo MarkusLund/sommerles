@@ -4,4 +4,5 @@ server/sommerles.db
 server/sommerles.db-shm
 server/sommerles.db-wal
 .playwright-mcp
+.claude
 *.log

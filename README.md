@@ -6,7 +6,7 @@ samler XP, går opp i level og låser opp nye avatarer ved å registrere lesing.
 ## Funksjoner
 
 - 👧 **Flere barneprofiler** – opprett og bytt mellom profiler (navn + alder)
-- 🔎 **Søk i ekte bøker** (Open Library) – autofyller tittel, forfatter, sidetall, omslag og estimert ordtelling/lesetid
+- 🔎 **Søk i ekte bøker** (Nasjonalbiblioteket, med fuzzy-søk) – autofyller tittel, forfatter, sidetall, omslag og estimert ordtelling/lesetid
 - 📖 **Registrer lesing** i enten **minutter** eller **sider** (også helt manuelt)
 - 🎧 Leste selv / hørte lydbok / ble lest for – alt gir XP
 - ⭐ **XP & level** – 1 XP per minutt, 2 XP per side, +25 XP når du fullfører en bok
@@ -19,13 +19,18 @@ samler XP, går opp i level og låser opp nye avatarer ved å registrere lesing.
 - **Frontend:** Vite + React
 - **Backend:** Hono (Node) med REST-API
 - **Database:** SQLite (better-sqlite3)
-- **Boksøk:** [Open Library Search API](https://openlibrary.org/developers/api) (gratis, ingen nøkkel), proxyet gjennom serveren
+- **Boksøk:** [Nasjonalbibliotekets katalog-API](https://api.nb.no/) (gratis, ingen nøkkel, best norsk dekning) med [Open Library](https://openlibrary.org/developers/api) som fallback, proxyet gjennom serveren
 - Delt spill-logikk i `src/shared/game.js` (brukes av både klient og server)
 
 ### Boksøk og estimater
 
-Serveren har et endepunkt `GET /api/books/search?q=…` som spør Open Library og
-normaliserer svaret til `{ title, author, pages, words, cover, year }`.
+Serveren har et endepunkt `GET /api/books/search?q=…` (se `server/books.js`) som:
+
+1. Spør **Nasjonalbiblioteket** først (best dekning på norske bøker, ekte sidetall + omslag)
+2. Faller tilbake til **fuzzy-søk** (Lucene `~2`) hvis få treff – tåler skrivefeil
+3. Faller tilbake til **Open Library** hvis NB ikke svarer eller gir null treff
+4. Slår sammen duplikater og normaliserer til `{ title, author, pages, words, cover, year, isbn, language, source }`
+
 Ordtelling og lesetid anslås fra sidetallet (`WORDS_PER_PAGE`, `READING_WPM` i
 `src/shared/game.js`). Du kan også registrere helt manuelt uten å søke.
 
