@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { avatarByEmoji, levelFromXp } from '../shared/game.js'
 
-export default function ProfilePicker({ children, onOpen, onCreate, onDelete }) {
+export default function ProfilePicker({ children, onOpen, onCreate, onDelete, onLogout }) {
   const [adding, setAdding] = useState(false)
   const [name, setName] = useState('')
   const [age, setAge] = useState('')
@@ -26,6 +26,11 @@ export default function ProfilePicker({ children, onOpen, onCreate, onDelete }) 
 
   return (
     <div className="picker">
+      {onLogout && (
+        <button className="logout-btn" onClick={onLogout} title="Logg ut">
+          Logg ut
+        </button>
+      )}
       <div className="picker-hero">
         <div className="logo">📚☀️</div>
         <h1>Sommerles</h1>
@@ -72,7 +77,7 @@ export default function ProfilePicker({ children, onOpen, onCreate, onDelete }) 
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="F.eks. Solveig"
+                placeholder="F.eks. Mathias"
                 autoFocus
                 maxLength={30}
               />

@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { api } from './api.js'
+import Auth from './components/Auth.jsx'
 import ProfilePicker from './components/ProfilePicker.jsx'
 import Header from './components/Header.jsx'
 import RegisterReading from './components/RegisterReading.jsx'
@@ -8,7 +9,21 @@ import Avatars from './components/Avatars.jsx'
 import ReadingLog from './components/ReadingLog.jsx'
 import Confetti from './components/Confetti.jsx'
 
+const USER_KEY = 'sommerles_user'
+
+function loadStoredUser() {
+  try {
+    const raw = localStorage.getItem(USER_KEY)
+    return raw ? JSON.parse(raw) : undefined
+  } catch {
+    return undefined
+  }
+}
+
 export default function App() {
+  // Optimistisk: hvis vi har en lagret bruker, vis appen med en gang og
+  // valider økten mot serveren i bakgrunnen. Ellers: undefined = laster.
+  const [user, setUserState] = useState(loadStoredUser) // undefined = laster, null = ikke innlogget
   const [children, setChildren] = useState([])
   const [activeId, setActiveId] = useState(null)
   const [readings, setReadings] = useState([])
@@ -24,9 +39,38 @@ export default function App() {
     return list
   }, [])
 
+  const setUser = useCallback((u) => {
+    setUserState(u)
+    try {
+      if (u) localStorage.setItem(USER_KEY, JSON.stringify(u))
+      else localStorage.removeItem(USER_KEY)
+    } catch {
+      /* localStorage utilgjengelig – fungerer fortsatt via cookie */
+    }
+  }, [])
+
+  // Valider økten mot serveren (cookie). Bekrefter eller rydder lagret bruker.
   useEffect(() => {
+    api
+      .me()
+      .then((u) => setUser(u))
+      .catch(() => setUser(null))
+  }, [setUser])
+
+  // Last barn så snart vi er innlogget.
+  useEffect(() => {
+    if (!user) return
+    setLoading(true)
     refreshChildren().finally(() => setLoading(false))
-  }, [refreshChildren])
+  }, [user, refreshChildren])
+
+  async function handleLogout() {
+    await api.logout().catch(() => {})
+    setActiveId(null)
+    setReadings([])
+    setChildren([])
+    setUser(null)
+  }
 
   const loadReadings = useCallback(async (id) => {
     setReadings(await api.listReadings(id))
@@ -81,13 +125,17 @@ export default function App() {
     await loadReadings(activeId)
   }
 
-  if (loading) {
+  if (user === undefined || (user && loading)) {
     return (
       <div className="loading-screen">
         <div className="sun-spin">☀️</div>
         <p>Laster Sommerles …</p>
       </div>
     )
+  }
+
+  if (!user) {
+    return <Auth onAuthed={setUser} />
   }
 
   if (!active) {
@@ -97,6 +145,7 @@ export default function App() {
         onOpen={openChild}
         onCreate={handleCreate}
         onDelete={handleDeleteChild}
+        onLogout={handleLogout}
       />
     )
   }

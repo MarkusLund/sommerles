@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { xpForReading, statsFromReadings, levelFromXp, AVATARS } from '../src/shared/game.js'
 import { searchBooks } from './books.js'
+import { safeEqual, createSession, clearSession, readSession } from './auth.js'
 
 const app = new Hono()
 
@@ -8,6 +9,35 @@ const app = new Hono()
 function nowIso() {
   return new Date().toISOString()
 }
+
+// ── Innlogging ──────────────────────────────────────────────────────────────
+// Én fast familie-innlogging. Alt under /api/* (utenom /api/auth/*) krever økt.
+app.use('/api/*', async (c, next) => {
+  if (c.req.path.startsWith('/api/auth/')) return next()
+  const session = await readSession(c)
+  if (!session) return c.json({ error: 'Ikke innlogget' }, 401)
+  return next()
+})
+
+app.post('/api/auth/login', async (c) => {
+  const { username, password } = await c.req.json().catch(() => ({}))
+  const okUser = safeEqual(username ?? '', c.env.AUTH_USERNAME)
+  const okPass = safeEqual(password ?? '', c.env.AUTH_PASSWORD)
+  if (!okUser || !okPass) return c.json({ error: 'Feil brukernavn eller passord' }, 401)
+  await createSession(c, c.env.AUTH_USERNAME)
+  return c.json({ username: c.env.AUTH_USERNAME })
+})
+
+app.post('/api/auth/logout', (c) => {
+  clearSession(c)
+  return c.json({ ok: true })
+})
+
+app.get('/api/auth/me', async (c) => {
+  const session = await readSession(c)
+  if (!session) return c.json({ error: 'Ikke innlogget' }, 401)
+  return c.json({ username: session.sub })
+})
 
 async function readingsForChild(db, childId) {
   const { results } = await db

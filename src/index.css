@@ -322,3 +322,26 @@ label input:focus { border-color: var(--accent2); }
   .estimate { font-size: 0.82rem; }
   .estimate-btn { margin-left: 0; }
 }
+
+/* ── Innlogging ───────────────────────────────────────────────────────────── */
+.auth-screen {
+  min-height: 100vh; display: grid; place-items: center; padding: 20px;
+  padding-top: max(20px, env(safe-area-inset-top));
+}
+.auth-card {
+  background: #fff; border-radius: var(--radius); padding: 36px 30px; width: 100%;
+  max-width: 380px; box-shadow: var(--shadow); text-align: center;
+}
+.auth-card .logo { font-size: 3.4rem; }
+.auth-card h1 { font-size: 2.2rem; margin: 6px 0 2px; letter-spacing: -1px; }
+.auth-sub { color: var(--ink-soft); margin: 0 0 22px; }
+.auth-card form { display: flex; flex-direction: column; gap: 14px; text-align: left; }
+.auth-submit { margin-top: 6px; width: 100%; padding: 13px; font-size: 1.05rem; }
+
+.logout-btn {
+  position: absolute; top: max(14px, env(safe-area-inset-top)); right: 16px;
+  background: rgba(255,255,255,0.85); border: 2px solid #fff; color: var(--ink);
+  border-radius: 999px; padding: 8px 16px; font-weight: 700; font-size: 0.9rem;
+  box-shadow: var(--shadow); transition: transform 0.1s, filter 0.15s;
+}
+.logout-btn:hover { filter: brightness(0.97); transform: translateY(-1px); }

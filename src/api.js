@@ -11,6 +11,10 @@ async function req(url, options) {
 }
 
 export const api = {
+  me: () => req('/api/auth/me'),
+  login: (username, password) =>
+    req('/api/auth/login', { method: 'POST', body: JSON.stringify({ username, password }) }),
+  logout: () => req('/api/auth/logout', { method: 'POST' }),
   searchBooks: (q) => req(`/api/books/search?q=${encodeURIComponent(q)}`),
   listChildren: () => req('/api/children'),
   createChild: (name, age) =>
