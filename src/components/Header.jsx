@@ -1,4 +1,4 @@
-import { AVATARS } from '../shared/game.js'
+import { AVATARS, nextMilestone, milestoneForLevel } from '../shared/game.js'
 
 function fmtTime(min) {
   const h = Math.floor(min / 60)
@@ -6,9 +6,11 @@ function fmtTime(min) {
   return h > 0 ? `${h}t ${m}m` : `${m}m`
 }
 
-export default function Header({ child, onBack }) {
+export default function Header({ child, onBack, onShowPremier }) {
   const { level, stats } = child
   const nextAvatar = AVATARS.find((a) => a.level === level.level + 1)
+  const here = milestoneForLevel(level.level)
+  const next = nextMilestone(level.level)
 
   return (
     <header className="header">
@@ -19,22 +21,34 @@ export default function Header({ child, onBack }) {
       </div>
 
       <div className="header-main">
-        <div className="header-avatar">{child.avatar}</div>
+        <div className={`header-avatar ${here ? `milestone-glow tier-${here.tier}` : ''}`}>
+          {child.avatar}
+        </div>
         <div className="header-info">
           <div className="header-name">Hei {child.name}!</div>
           <div className="level-row">
-            <span className="level-badge">Level {level.level}</span>
+            <span className={`level-badge ${here ? `tier-${here.tier}` : ''}`}>
+              {here ? `${here.medal} Level ${level.level}` : `Level ${level.level}`}
+            </span>
             <div className="level-bar">
               <div className="level-fill" style={{ width: `${level.pct}%` }} />
             </div>
             <span className="level-xp">
-              {level.isMax ? `${stats.totalXp} XP · maks!` : `${level.xpToNext} XP til level ${level.level + 1}`}
+              {level.isMax ? `${stats.totalXp} XP · toppen!` : `${level.xpToNext} XP til level ${level.level + 1}`}
             </span>
           </div>
-          {!level.isMax && nextAvatar && (
-            <div className="next-avatar-hint">
-              Neste avatar: <span className="locked">{nextAvatar.emoji}</span> {nextAvatar.name}
-            </div>
+          {next ? (
+            <button className="milestone-hint" onClick={onShowPremier}>
+              {next.medal}{' '}
+              <strong>{Math.max(0, (next.level - 1) * level.span - stats.totalXp)} XP</strong> til{' '}
+              {next.title} på level {next.level} – med ekte premie! →
+            </button>
+          ) : (
+            !level.isMax && nextAvatar && (
+              <div className="next-avatar-hint">
+                Neste avatar: <span className="locked">{nextAvatar.emoji}</span> {nextAvatar.name}
+              </div>
+            )
           )}
         </div>
       </div>

@@ -22,7 +22,7 @@ body {
   min-height: 100vh;
 }
 
-h1, h2, h3 { margin: 0 0 0.4em; }
+h1, h2, h3 { margin: 0 0 0.4em; font-family: 'Baloo 2', 'Nunito', system-ui, sans-serif; }
 button { font-family: inherit; cursor: pointer; }
 input { font-family: inherit; }
 
@@ -345,3 +345,181 @@ label input:focus { border-color: var(--accent2); }
   box-shadow: var(--shadow); transition: transform 0.1s, filter 0.15s;
 }
 .logout-btn:hover { filter: brightness(0.97); transform: translateY(-1px); }
+
+/* ── Milepæl-tema (level 10/20/30) ───────────────────────────────────────── */
+:root {
+  --bronse1: #d98a4e; --bronse2: #a85f2c; --bronse-soft: #f6e0cb;
+  --solv1: #b9c2cc;  --solv2: #7f8a99;  --solv-soft: #eef1f5;
+  --gull1: #ffcf40;  --gull2: #e6a100;  --gull-soft: #fff4cf;
+}
+
+/* Header: milepæl-hint som peker mot neste premie */
+.milestone-hint {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 10px;
+  background: linear-gradient(95deg, #fff4cf, #ffe9a8); border: 2px solid #ffd86b;
+  color: #8a6d00; font-weight: 800; font-size: 0.86rem; border-radius: 999px;
+  padding: 7px 14px; text-align: left; line-height: 1.25;
+  box-shadow: 0 4px 12px rgba(255,193,40,0.3); transition: transform 0.12s, filter 0.15s;
+}
+.milestone-hint:hover { transform: translateY(-1px); filter: brightness(1.03); }
+.milestone-hint strong { color: var(--accent); }
+
+/* Header level-badge i milepæl-farger + glødende avatar-ramme */
+.level-badge.tier-bronse { background: linear-gradient(135deg, var(--bronse1), var(--bronse2)); }
+.level-badge.tier-solv   { background: linear-gradient(135deg, var(--solv1), var(--solv2)); }
+.level-badge.tier-gull   { background: linear-gradient(135deg, var(--gull1), var(--gull2)); color: #5a4500; }
+.header-avatar.milestone-glow { position: relative; box-shadow: 0 0 0 4px #fff, 0 0 0 8px currentColor; }
+.header-avatar.milestone-glow.tier-bronse { color: var(--bronse1); }
+.header-avatar.milestone-glow.tier-solv   { color: var(--solv2); }
+.header-avatar.milestone-glow.tier-gull   { color: var(--gull2); animation: glowpulse 2.2s ease-in-out infinite; }
+@keyframes glowpulse { 0%,100% { box-shadow: 0 0 0 4px #fff, 0 0 0 8px var(--gull1); } 50% { box-shadow: 0 0 0 4px #fff, 0 0 0 12px var(--gull2); } }
+
+/* ── Premier-fane: milepæl-kort ──────────────────────────────────────────── */
+.milestone-track {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px;
+}
+.milestone-card {
+  position: relative; border: 3px solid transparent; border-radius: 20px; padding: 22px 12px 16px;
+  text-align: center; background: #f7f7fb; transition: transform 0.15s, box-shadow 0.15s; overflow: hidden;
+}
+.milestone-card .milestone-medal { font-size: 3.4rem; line-height: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); }
+.milestone-card .milestone-title { font-weight: 800; font-family: 'Baloo 2', sans-serif; margin-top: 6px; }
+.milestone-card .milestone-level { font-size: 0.8rem; color: var(--ink-soft); font-weight: 800; }
+.milestone-card .milestone-cta { margin-top: 8px; font-size: 0.82rem; font-weight: 800; color: var(--accent); }
+.milestone-card .milestone-progress { margin-top: 8px; font-size: 0.78rem; font-weight: 800; color: var(--ink-soft); }
+.milestone-card.locked { opacity: 0.8; cursor: not-allowed; }
+.milestone-card.locked .milestone-medal { filter: grayscale(0.3) opacity(0.8); }
+.milestone-card.earned { cursor: pointer; }
+.milestone-card.earned:hover { transform: translateY(-5px); box-shadow: 0 14px 30px rgba(45,42,74,0.2); }
+.milestone-card.earned.tier-bronse { background: linear-gradient(160deg, #fff, var(--bronse-soft)); border-color: var(--bronse1); }
+.milestone-card.earned.tier-solv   { background: linear-gradient(160deg, #fff, var(--solv-soft));  border-color: var(--solv2); }
+.milestone-card.earned.tier-gull   { background: linear-gradient(160deg, #fff, var(--gull-soft));  border-color: var(--gull2); }
+.milestone-card.earned::after {
+  content: ''; position: absolute; top: -40%; left: -60%; width: 50%; height: 200%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
+  transform: rotate(18deg); animation: shimmer 3.5s ease-in-out infinite;
+}
+@keyframes shimmer { 0% { left: -60%; } 60%,100% { left: 130%; } }
+
+/* ── Avatar-rutenett: milepæl-markører ───────────────────────────────────── */
+.avatar-card.milestone { border-color: #ffe09a; }
+.avatar-card.milestone.unlocked.tier-bronse { background: linear-gradient(160deg, #fff7f0, var(--bronse-soft)); border-color: var(--bronse1); }
+.avatar-card.milestone.unlocked.tier-solv   { background: linear-gradient(160deg, #fafcff, var(--solv-soft));  border-color: var(--solv2); }
+.avatar-card.milestone.unlocked.tier-gull   { background: linear-gradient(160deg, #fffdf3, var(--gull-soft));  border-color: var(--gull2); }
+.avatar-star { position: absolute; top: 6px; left: 8px; font-size: 0.95rem; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2)); }
+
+/* ── Milepæl-feiring (confetti-kort) ─────────────────────────────────────── */
+.celebrate-card.milestone-pop { max-width: 380px; border-top: 8px solid var(--gull2); }
+.celebrate-card.milestone-pop.tier-bronse { border-top-color: var(--bronse1); }
+.celebrate-card.milestone-pop.tier-solv   { border-top-color: var(--solv2); }
+.celebrate-card.milestone-pop.tier-gull   { border-top-color: var(--gull2); }
+.celebrate-medal { font-size: 5rem; animation: medalspin 1s cubic-bezier(.22,1.4,.36,1); }
+@keyframes medalspin { from { transform: scale(0) rotate(-120deg); } to { transform: scale(1) rotate(0); } }
+.celebrate-kicker { font-weight: 900; letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem; color: var(--gull2); }
+.celebrate-card.tier-bronse .celebrate-kicker { color: var(--bronse2); }
+.celebrate-card.tier-solv .celebrate-kicker { color: var(--solv2); }
+.celebrate-actions { display: flex; gap: 10px; margin-top: 16px; justify-content: center; }
+
+/* ── Diplom ──────────────────────────────────────────────────────────────── */
+.diploma-overlay {
+  position: fixed; inset: 0; z-index: 120; background: rgba(45,42,74,0.62);
+  display: grid; place-items: center; padding: 20px; backdrop-filter: blur(4px); overflow-y: auto;
+}
+.diploma-stage { width: 100%; max-width: 560px; }
+.diploma-actions { display: flex; gap: 12px; justify-content: center; margin-top: 18px; }
+.diploma-actions .btn-ghost {
+  background: #fff; border-color: #fff; color: var(--ink);
+  box-shadow: 0 6px 14px rgba(45,42,74,0.25);
+}
+.diploma-actions .btn-ghost:hover { filter: brightness(0.96); transform: translateY(-1px); }
+
+.diploma {
+  position: relative; border-radius: 18px; padding: 8px; overflow: hidden;
+  background: linear-gradient(135deg, var(--gull1), var(--gull2));
+  box-shadow: 0 24px 60px rgba(45,42,74,0.4); animation: pop 0.45s cubic-bezier(.22,1.4,.36,1);
+}
+.diploma-bronse { background: linear-gradient(135deg, var(--bronse1), var(--bronse2)); }
+.diploma-solv   { background: linear-gradient(135deg, var(--solv1), var(--solv2)); }
+.diploma-gull   { background: linear-gradient(135deg, var(--gull1), var(--gull2)); }
+.diploma-sheen {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(120% 80% at 20% 0%, rgba(255,255,255,0.55), transparent 55%);
+}
+.diploma-corner {
+  position: absolute; font-size: 1.2rem; color: rgba(255,255,255,0.85); z-index: 2;
+}
+.diploma-corner.tl { top: 16px; left: 18px; }
+.diploma-corner.tr { top: 16px; right: 18px; }
+.diploma-corner.bl { bottom: 16px; left: 18px; }
+.diploma-corner.br { bottom: 16px; right: 18px; }
+
+.diploma-inner {
+  position: relative; z-index: 1; background: #fffdf7;
+  border: 2px dashed rgba(45,42,74,0.18); border-radius: 12px;
+  padding: 30px 30px 22px; text-align: center;
+  background-image: radial-gradient(rgba(45,42,74,0.04) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+.diploma-kicker {
+  font-weight: 900; letter-spacing: 3px; text-transform: uppercase; font-size: 0.72rem;
+  color: var(--ink-soft);
+}
+.diploma-seal { position: relative; display: inline-grid; place-items: center; margin: 12px 0 4px; }
+.diploma-seal-medal { font-size: 4.4rem; filter: drop-shadow(0 6px 8px rgba(0,0,0,0.2)); z-index: 1; }
+.diploma-seal-ribbon {
+  position: absolute; bottom: -6px; width: 64px; height: 26px;
+  background: linear-gradient(180deg, #ff6b6b, #d63d3d);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 72%, 0 100%); opacity: 0.92;
+}
+.diploma-title {
+  font-family: 'Playfair Display', serif; font-weight: 900; font-size: 2.4rem;
+  margin: 4px 0 2px; color: var(--ink); line-height: 1.05;
+}
+.diploma-for { font-style: italic; color: var(--ink-soft); margin: 8px 0 0; font-family: 'Playfair Display', serif; }
+.diploma-name {
+  font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: 2.2rem; margin: 2px 0 8px;
+  color: var(--accent); line-height: 1.1;
+}
+.diploma-blurb { color: var(--ink); font-weight: 600; max-width: 400px; margin: 0 auto 18px; line-height: 1.45; }
+
+.diploma-stats {
+  display: flex; gap: 10px; justify-content: center; margin: 0 0 18px;
+}
+.diploma-stat { flex: 1; max-width: 150px; background: #fff; border-radius: 14px; padding: 12px 6px; box-shadow: inset 0 0 0 2px rgba(45,42,74,0.06); }
+.diploma-stat-num { font-family: 'Baloo 2', sans-serif; font-weight: 800; font-size: clamp(1.1rem, 4.4vw, 1.45rem); color: var(--ink); white-space: nowrap; }
+.diploma-stat-label { font-size: 0.74rem; font-weight: 700; color: var(--ink-soft); }
+
+.diploma-prize {
+  display: inline-flex; flex-direction: column; gap: 2px; align-items: center;
+  background: linear-gradient(135deg, #fff4cf, #ffe9a8); border: 2px solid #ffd86b;
+  border-radius: 14px; padding: 10px 22px; margin-bottom: 12px;
+}
+.diploma-prize-label { font-weight: 900; font-size: 0.7rem; letter-spacing: 1.5px; text-transform: uppercase; color: #8a6d00; }
+.diploma-prize-text { font-family: 'Baloo 2', sans-serif; font-weight: 800; color: var(--ink); }
+.diploma-claim { font-size: 0.85rem; font-weight: 700; color: var(--ink-soft); margin: 0 0 16px; }
+.diploma-footer {
+  display: flex; justify-content: space-between; align-items: center; border-top: 2px dotted rgba(45,42,74,0.15);
+  padding-top: 12px; font-size: 0.82rem; font-weight: 700; color: var(--ink-soft);
+}
+.diploma-sign { font-family: 'Baloo 2', sans-serif; }
+
+/* ── Utskrift: vis kun diplomet ──────────────────────────────────────────── */
+@media print {
+  body { background: #fff; }
+  body * { visibility: hidden; }
+  .diploma-overlay { position: static; background: none; padding: 0; backdrop-filter: none; display: block; }
+  .diploma-stage, .diploma-stage * { visibility: visible; }
+  .diploma-stage { max-width: none; }
+  .diploma-actions { display: none; }
+  .diploma { box-shadow: none; animation: none; }
+  .milestone-card.earned::after { display: none; }
+}
+
+@media (max-width: 600px) {
+  .milestone-track { grid-template-columns: 1fr; }
+  .diploma-inner { padding: 24px 18px 18px; }
+  .diploma-title { font-size: 2rem; }
+  .diploma-name { font-size: 1.8rem; }
+  .diploma-stats { flex-wrap: wrap; }
+  .diploma-stat { max-width: none; }
+}

@@ -6,8 +6,10 @@ import Header from './components/Header.jsx'
 import RegisterReading from './components/RegisterReading.jsx'
 import Trophies from './components/Trophies.jsx'
 import Avatars from './components/Avatars.jsx'
+import Diplomas from './components/Diplomas.jsx'
 import ReadingLog from './components/ReadingLog.jsx'
 import Confetti from './components/Confetti.jsx'
+import { crossedMilestones } from './shared/game.js'
 
 const USER_KEY = 'sommerles_user'
 
@@ -106,11 +108,13 @@ export default function App() {
     await loadReadings(activeId)
     const newLevel = child.level.level
     const levelUp = newLevel > prevLevel
+    const milestone = crossedMilestones(prevLevel, newLevel).slice(-1)[0] || null
     setCelebrate({
       xp: gainedXp,
       levelUp,
       level: newLevel,
       avatar: levelUp ? child.unlockedAvatars[child.unlockedAvatars.length - 1] : null,
+      milestone,
     })
   }
 
@@ -152,8 +156,17 @@ export default function App() {
 
   return (
     <div className="app">
-      {celebrate && <Confetti data={celebrate} onClose={() => setCelebrate(null)} />}
-      <Header child={active} onBack={backToPicker} />
+      {celebrate && (
+        <Confetti
+          data={celebrate}
+          onClose={() => setCelebrate(null)}
+          onSeePremier={() => {
+            setCelebrate(null)
+            setView('premier')
+          }}
+        />
+      )}
+      <Header child={active} onBack={backToPicker} onShowPremier={() => setView('premier')} />
 
       <nav className="tabs">
         <button className={view === 'profil' ? 'active' : ''} onClick={() => setView('profil')}>
@@ -161,6 +174,9 @@ export default function App() {
         </button>
         <button className={view === 'lesing' ? 'active' : ''} onClick={() => setView('lesing')}>
           ➕ Ny lesing
+        </button>
+        <button className={view === 'premier' ? 'active' : ''} onClick={() => setView('premier')}>
+          🎖️ Premier
         </button>
         <button className={view === 'avatarer' ? 'active' : ''} onClick={() => setView('avatarer')}>
           🎭 Avatarer
@@ -175,6 +191,7 @@ export default function App() {
           </>
         )}
         {view === 'lesing' && <RegisterReading onAdd={handleAddReading} />}
+        {view === 'premier' && <Diplomas child={active} />}
         {view === 'avatarer' && (
           <Avatars child={active} onPick={handlePickAvatar} />
         )}

@@ -1,5 +1,11 @@
 import { Hono } from 'hono'
-import { xpForReading, statsFromReadings, levelFromXp, AVATARS } from '../src/shared/game.js'
+import {
+  xpForReading,
+  statsFromReadings,
+  levelFromXp,
+  milestoneSnapshots,
+  AVATARS,
+} from '../src/shared/game.js'
 import { searchBooks } from './books.js'
 import { safeEqual, createSession, clearSession, readSession } from './auth.js'
 
@@ -56,6 +62,7 @@ async function decorateChild(db, child) {
     ...child,
     stats,
     level,
+    diplomas: milestoneSnapshots(readings),
     unlockedAvatars: AVATARS.filter((a) => a.level <= level.level).map((a) => a.emoji),
   }
 }
