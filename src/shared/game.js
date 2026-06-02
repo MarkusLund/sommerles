@@ -17,13 +17,14 @@ export const AVATARS = [
 ]
 
 // ── Nivåer ────────────────────────────────────────────────────────────────
-// Kumulativ XP som kreves for å NÅ hvert level (level 1 = 0 XP).
-export const LEVEL_THRESHOLDS = [0, 120, 300, 560, 900, 1320, 1840, 2460, 3200, 4060]
+// Lineær progresjon: hvert level koster like mye XP. Like mye å gå 1→2 som 10→11.
+// Terskel for level n = (n-1) * XP_PER_LEVEL. Ingen øvre grense på level.
+export const XP_PER_LEVEL = 180
 
 // ── XP-regler ───────────────────────────────────────────────────────────────
 export const XP_PER_MINUTE = 1
 export const XP_PER_PAGE = 2
-export const XP_FINISH_BONUS = 25
+export const XP_FINISH_BONUS = 75
 
 // Estimat brukt når vi henter ekte bøker fra bok-API-et.
 export const WORDS_PER_PAGE = 275 // grovt snitt for å anslå ordmengde fra sidetall
@@ -58,26 +59,22 @@ export function xpForReading({ unit, amount, finished }) {
   return Math.round(xp)
 }
 
-// Returnerer { level, into, span, pct, current, next } for en gitt total-XP.
+// Returnerer { level, isMax, into, span, pct, xpToNext } for en gitt total-XP.
+// Lineær: level = floor(xp / XP_PER_LEVEL) + 1, uten øvre grense.
 export function levelFromXp(totalXp) {
   const xp = Math.max(0, totalXp || 0)
-  let level = 1
-  for (let i = 0; i < LEVEL_THRESHOLDS.length; i++) {
-    if (xp >= LEVEL_THRESHOLDS[i]) level = i + 1
-  }
-  const maxLevel = LEVEL_THRESHOLDS.length
-  const base = LEVEL_THRESHOLDS[level - 1]
-  const nextThreshold = level < maxLevel ? LEVEL_THRESHOLDS[level] : null
-  const span = nextThreshold == null ? 0 : nextThreshold - base
+  const level = Math.floor(xp / XP_PER_LEVEL) + 1
+  const base = (level - 1) * XP_PER_LEVEL
+  const span = XP_PER_LEVEL
   const into = xp - base
-  const pct = nextThreshold == null ? 100 : Math.min(100, Math.round((into / span) * 100))
+  const pct = Math.min(100, Math.round((into / span) * 100))
   return {
     level,
-    isMax: level >= maxLevel,
+    isMax: false, // ingen øvre grense lenger – man kan alltid klatre videre
     into,
     span,
     pct,
-    xpToNext: nextThreshold == null ? 0 : nextThreshold - xp,
+    xpToNext: base + span - xp,
   }
 }
 
