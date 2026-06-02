@@ -1,3 +1,4 @@
+
 # Sommerles ☀️📚
 
 A reading app that tracks the reading progress of kids. Children register what they
@@ -98,6 +99,8 @@ src/
 ```
 
 The XP table and avatars can be adjusted in `src/shared/game.js`.
+
+<img width="912" height="1072" alt="Screenshot 2026-06-02 at 09 43 46" src="https://github.com/user-attachments/assets/de5bd101-e3ef-4314-8387-4f0fa186d6b2" />
 
 ## License
 
