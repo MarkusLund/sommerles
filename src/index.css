@@ -194,11 +194,42 @@ label input:focus { border-color: var(--accent2); }
 .book-search { position: relative; }
 .search-input-wrap { position: relative; }
 .search-input-wrap input {
-  width: 100%; border: 2px solid #e6e5ef; border-radius: 12px; padding: 11px 38px 11px 13px;
+  width: 100%; border: 2px solid #e6e5ef; border-radius: 12px; padding: 11px 48px 11px 13px;
   font-size: 1rem; font-weight: 600; outline: none; transition: border-color 0.15s;
 }
 .search-input-wrap input:focus { border-color: var(--accent2); }
-.search-spinner { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); }
+.search-spinner { position: absolute; right: 48px; top: 50%; transform: translateY(-50%); }
+.scan-btn {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  border: none; background: #f3f2fb; border-radius: 10px; width: 34px; height: 34px;
+  font-size: 1.2rem; line-height: 1; cursor: pointer; display: grid; place-items: center;
+  transition: background 0.15s;
+}
+.scan-btn:hover { background: #e4e1f5; }
+
+/* Kamera-overlay for strekkode-skanning */
+.scanner-overlay {
+  position: fixed; inset: 0; z-index: 100; background: rgba(0, 0, 0, 0.7);
+  display: grid; place-items: center; padding: 16px;
+}
+.scanner-box {
+  background: #fff; border-radius: 18px; padding: 18px; max-width: 420px; width: 100%;
+  box-shadow: var(--shadow); text-align: center;
+}
+.scanner-title { font-weight: 800; font-size: 1.05rem; margin-bottom: 12px; }
+.scanner-video-wrap { position: relative; border-radius: 14px; overflow: hidden; background: #000; }
+.scanner-video { width: 100%; display: block; max-height: 60vh; object-fit: cover; }
+.scanner-reticle {
+  position: absolute; left: 10%; right: 10%; top: 50%; transform: translateY(-50%);
+  height: 28%; border: 3px solid var(--accent2); border-radius: 12px;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.25);
+}
+.scanner-hint { font-size: 0.85rem; color: var(--ink-soft); font-weight: 600; margin: 12px 0; }
+.scanner-error { color: #c0392b; font-weight: 700; margin: 16px 0; }
+.scanner-close {
+  border: none; background: var(--accent2); color: #fff; font-weight: 800;
+  padding: 10px 22px; border-radius: 12px; cursor: pointer; font-size: 0.95rem;
+}
 .search-hint { font-size: 0.85rem; color: var(--ink-soft); font-weight: 600; margin: 6px 0 0; }
 .search-results {
   list-style: none; margin: 6px 0 0; padding: 6px; position: absolute; z-index: 20; left: 0; right: 0;

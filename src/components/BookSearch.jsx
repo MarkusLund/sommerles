@@ -1,5 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { api } from '../api.js'
+
+// Lazy: ZXing-biblioteket (~370 KB) lastes først når kameraknappen trykkes.
+const BarcodeScanner = lazy(() => import('./BarcodeScanner.jsx'))
 
 export default function BookSearch({ onSelect }) {
   const [q, setQ] = useState('')
@@ -7,6 +10,7 @@ export default function BookSearch({ onSelect }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [scanning, setScanning] = useState(false)
   const boxRef = useRef(null)
   const debounce = useRef(null)
 
@@ -50,6 +54,12 @@ export default function BookSearch({ onSelect }) {
     setOpen(false)
   }
 
+  // Strekkode skannet → legg ISBN i søkefeltet, som trigger søket (useEffect på q).
+  function onScanned(isbn) {
+    setScanning(false)
+    setQ(isbn)
+  }
+
   return (
     <div className="book-search" ref={boxRef}>
       <div className="field-label">🔎 Søk etter en ekte bok</div>
@@ -58,10 +68,25 @@ export default function BookSearch({ onSelect }) {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onFocus={() => results.length && setOpen(true)}
-          placeholder="Skriv tittel eller forfatter …"
+          placeholder="Skriv tittel, forfatter eller ISBN …"
         />
         {loading && <span className="search-spinner">⏳</span>}
+        <button
+          type="button"
+          className="scan-btn"
+          onClick={() => setScanning(true)}
+          title="Skann strekkoden på boka"
+          aria-label="Skann strekkode"
+        >
+          📷
+        </button>
       </div>
+
+      {scanning && (
+        <Suspense fallback={null}>
+          <BarcodeScanner onDetected={onScanned} onClose={() => setScanning(false)} />
+        </Suspense>
+      )}
 
       {error && <p className="search-hint">{error}</p>}
 

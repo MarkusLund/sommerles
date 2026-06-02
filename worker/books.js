@@ -61,6 +61,55 @@ async function nbFetch(q, size = 12) {
   return (data._embedded?.items || []).map(normalizeNb).filter((b) => b.title)
 }
 
+// ISBN: fjern bindestrek/mellomrom, godta 10 (siste kan være X) eller 13 siffer.
+// Bokstrekkoder er EAN-13, som er identisk med ISBN-13 – så en skannet strekkode
+// kommer rett inn her.
+function normalizeIsbn(q) {
+  const s = String(q).replace(/[\s-]/g, '').toUpperCase()
+  if (/^\d{13}$/.test(s)) return s
+  if (/^\d{9}[\dX]$/.test(s)) return s
+  return null
+}
+
+// Presist ISBN-oppslag mot NB (q tar ISBN direkte).
+async function nbIsbnFetch(isbn) {
+  return nbFetch(isbn, 5)
+}
+
+// Presist ISBN-oppslag mot Open Library via search.json sitt isbn-felt.
+async function olIsbnFetch(isbn) {
+  const url =
+    'https://openlibrary.org/search.json?' +
+    new URLSearchParams({
+      isbn,
+      limit: '5',
+      fields: 'key,title,author_name,number_of_pages_median,cover_i,first_publish_year,language',
+    })
+  const res = await fetch(url, {
+    headers: { 'User-Agent': 'Sommerles-demo/0.1' },
+    signal: AbortSignal.timeout(TIMEOUT),
+  })
+  if (!res.ok) throw new Error('OL ' + res.status)
+  const data = await res.json()
+  return (data.docs || [])
+    .filter((b) => b.title)
+    .map((b) => {
+      const pages = b.number_of_pages_median || null
+      return {
+        id: 'ol:' + b.key,
+        title: b.title,
+        author: (b.author_name || []).slice(0, 3).join(', ') || null,
+        pages,
+        words: estimateWords(pages),
+        cover: b.cover_i ? `https://covers.openlibrary.org/b/id/${b.cover_i}-M.jpg` : null,
+        year: b.first_publish_year || null,
+        language: b.language?.[0] || null,
+        isbn,
+        source: 'ol',
+      }
+    })
+}
+
 // Legg til Lucene fuzzy (~2) på ord lengre enn 3 tegn – fanger skrivefeil.
 function toFuzzy(q) {
   return q
@@ -121,6 +170,26 @@ function dedupe(books) {
 }
 
 export async function searchBooks(q) {
+  // Ser det ut som et ISBN (f.eks. skannet strekkode)? Gjør presist oppslag.
+  const isbn = normalizeIsbn(q)
+  if (isbn) {
+    let hits = []
+    try {
+      hits = await nbIsbnFetch(isbn)
+    } catch {
+      /* NB nede – prøv Open Library */
+    }
+    if (hits.length === 0) {
+      try {
+        hits = await olIsbnFetch(isbn)
+      } catch {
+        /* begge feilet */
+      }
+    }
+    if (hits.length) return dedupe(hits).slice(0, 10)
+    // Fant ingenting på ISBN – fall tilbake til vanlig tekstsøk under.
+  }
+
   let results = []
   try {
     results = await nbFetch(q)
