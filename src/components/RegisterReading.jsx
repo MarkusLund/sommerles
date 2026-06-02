@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { READING_TYPES, UNITS, xpForReading, estimateWords, estimateMinutes } from '../shared/game.js'
+import { READING_TYPES, UNITS, xpForReading, estimateWords, estimateMinutes, XP_FINISH_BONUS } from '../shared/game.js'
 import BookSearch from './BookSearch.jsx'
 
 export default function RegisterReading({ onAdd }) {
@@ -166,7 +166,7 @@ export default function RegisterReading({ onAdd }) {
 
       <label className="checkbox">
         <input type="checkbox" checked={finished} onChange={(e) => setFinished(e.target.checked)} />
-        Jeg ble ferdig med boka! <span className="bonus">+25 XP bonus</span>
+        Jeg ble ferdig med boka! <span className="bonus">+{XP_FINISH_BONUS} XP bonus</span>
       </label>
 
       {error && <p className="form-error">{error}</p>}

@@ -6,11 +6,11 @@
 // Level 10/20/30 er milepæl-avatarer (rakett, drage-borg, krone) – se MILESTONES.
 export const AVATARS = [
   { level: 1, emoji: '🐣', name: 'Bokkylling' },
-  { level: 2, emoji: '🦊', name: 'Sluraven' },
+  { level: 2, emoji: '🦊', name: 'Slureven' },
   { level: 3, emoji: '🐸', name: 'Lesefrosk' },
   { level: 4, emoji: '🐼', name: 'Pandaleser' },
   { level: 5, emoji: '🦉', name: 'Natteugla' },
-  { level: 6, emoji: '🐙', name: 'Blekkruse' },
+  { level: 6, emoji: '🐙', name: 'Blekkspruten' },
   { level: 7, emoji: '🦁', name: 'Løveleser' },
   { level: 8, emoji: '🦄', name: 'Eventyrhest' },
   { level: 9, emoji: '🐉', name: 'Bokdragen' },
