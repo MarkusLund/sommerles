@@ -6,3 +6,4 @@ server
 .playwright-mcp
 .claude
 *.log
+sommerles-backup-*.sql

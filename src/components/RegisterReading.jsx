@@ -14,7 +14,7 @@ export default function RegisterReading({ onAdd }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
-  const preview = xpForReading({ unit, amount: Number(amount) || 0, finished })
+  const preview = xpForReading({ unit, amount: Number(amount) || 0, finished, type })
   const pagesNum = Number(pages) || 0
   const estWords = estimateWords(pagesNum)
   const estMinutes = estimateMinutes(pagesNum)

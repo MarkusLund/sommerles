@@ -157,7 +157,7 @@ app.post('/api/children/:id/readings', async (c) => {
   if (!title) return c.json({ error: 'Tittel er påkrevd' }, 400)
   if (amount < 1) return c.json({ error: 'Antall må være minst 1' }, 400)
 
-  const xp = xpForReading({ unit, amount, finished: !!finished })
+  const xp = xpForReading({ unit, amount, finished: !!finished, type })
   const reading = await db
     .prepare(
       `INSERT INTO readings (child_id, title, author, type, unit, amount, pages, finished, xp, created_at)

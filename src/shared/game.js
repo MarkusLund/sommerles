@@ -44,9 +44,18 @@ export const MAX_LEVEL = 30
 export const XP_PER_LEVEL = 180
 
 // ── XP-regler ───────────────────────────────────────────────────────────────
-export const XP_PER_MINUTE = 1
-export const XP_PER_PAGE = 2
-export const XP_FINISH_BONUS = 75
+export const XP_PER_MINUTE = 2
+export const XP_PER_PAGE = 4
+export const XP_FINISH_BONUS = 150
+
+// Type-faktor på lese-XP (ikke på fullfør-bonusen). Å lese selv gir full uttelling;
+// lydbok og å bli lest for gir 75 %. Selv den laveste typen (1,5 XP/min, 3 XP/side)
+// ligger over de gamle ratene (1/2), så alle typer gir nå mer XP enn før.
+export const TYPE_XP_FACTOR = {
+  lese: 1,
+  lydbok: 0.75,
+  lest_for: 0.75,
+}
 
 // Estimat brukt når vi henter ekte bøker fra bok-API-et.
 export const WORDS_PER_PAGE = 275 // grovt snitt for å anslå ordmengde fra sidetall
@@ -74,10 +83,11 @@ export const UNITS = [
   { id: 'sider', label: 'Sider', emoji: '📄' },
 ]
 
-export function xpForReading({ unit, amount, finished }) {
+export function xpForReading({ unit, amount, finished, type }) {
   const a = Math.max(0, Number(amount) || 0)
-  let xp = unit === 'sider' ? a * XP_PER_PAGE : a * XP_PER_MINUTE
-  if (finished) xp += XP_FINISH_BONUS
+  const factor = TYPE_XP_FACTOR[type] ?? 1
+  let xp = (unit === 'sider' ? a * XP_PER_PAGE : a * XP_PER_MINUTE) * factor
+  if (finished) xp += XP_FINISH_BONUS // fullfør-bonus er flat, uavhengig av type
   return Math.round(xp)
 }
 
