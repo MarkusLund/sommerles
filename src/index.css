@@ -439,6 +439,143 @@ label input:focus { border-color: var(--accent2); }
 .avatar-card.milestone.unlocked.tier-gull   { background: linear-gradient(160deg, #fffdf3, var(--gull-soft));  border-color: var(--gull2); }
 .avatar-star { position: absolute; top: 6px; left: 8px; font-size: 0.95rem; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.2)); }
 
+/* ── Maskot ─────────────────────────────────────────────────────────────── */
+.mascot-page { display: flex; flex-direction: column; gap: 18px; }
+.mascot-page > .card { margin-bottom: 0; }
+.mascot-hero {
+  position: relative; min-height: 330px; overflow: hidden; display: grid;
+  grid-template-columns: minmax(220px, .85fr) minmax(280px, 1.15fr); align-items: center;
+  background: radial-gradient(circle at 78% 25%, #fff9cf 0 22%, transparent 23%), linear-gradient(145deg, #fff, #fff4bd);
+}
+.mascot-hero::before {
+  content: ''; position: absolute; width: 190px; height: 190px; border: 28px solid rgba(77,150,255,.1);
+  border-radius: 50%; left: -80px; bottom: -105px;
+}
+.mascot-title { position: relative; z-index: 2; padding-left: 10px; }
+.mascot-title h2 { font-size: clamp(1.8rem, 5vw, 2.6rem); margin: 3px 0 5px; }
+.mascot-title p { margin: 0; color: var(--ink-soft); font-weight: 700; line-height: 1.45; max-width: 310px; }
+.mascot-eyebrow, .gachapon-kicker {
+  color: var(--accent); font-size: .75rem; font-weight: 900; letter-spacing: 1.7px; text-transform: uppercase;
+}
+.mascot-dog-stage {
+  position: relative; min-height: 285px; display: grid; place-items: end center;
+  background: radial-gradient(ellipse at 50% 93%, rgba(77,150,255,.18) 0 29%, transparent 30%);
+}
+.mascot-dog { width: min(100%, 290px); height: auto; overflow: visible; position: relative; z-index: 1; filter: drop-shadow(0 7px 3px rgba(45,42,74,.09)); }
+.mascot-stage-star { position: absolute; color: var(--bg1); font-size: 2.1rem; animation: mascot-float 2.2s ease-in-out infinite alternate; }
+.mascot-stage-star.one { top: 42px; left: 12%; transform: rotate(-18deg); }
+.mascot-stage-star.two { top: 80px; right: 8%; font-size: 1.4rem; animation-delay: -.8s; }
+.legendary-detail { filter: drop-shadow(0 2px 3px rgba(255,190,0,.5)); }
+@keyframes mascot-float { to { translate: 0 -9px; rotate: 10deg; } }
+
+/* ── Gachapon-maskin ───────────────────────────────────────────────────── */
+.gachapon-card {
+  min-height: 335px; display: grid; grid-template-columns: 1fr 300px; align-items: center; gap: 24px;
+  background: linear-gradient(135deg, #eaf3ff, #fff 58%); overflow: hidden;
+}
+.gachapon-copy { padding-left: 10px; position: relative; z-index: 2; }
+.gachapon-copy h2 { margin-top: 3px; font-size: 1.65rem; }
+.gachapon-copy > p:not(.form-error) { color: var(--ink-soft); font-weight: 650; line-height: 1.4; }
+.gachapon-balance {
+  display: inline-flex; align-items: center; gap: 6px; background: #fff5bd; color: #7c5a00;
+  border: 2px solid #ffdb59; border-radius: 999px; padding: 7px 14px; font-size: 1.05rem; font-weight: 900;
+  margin: 4px 0 14px;
+}
+.gachapon-balance span { font-size: 1.3rem; }
+.gachapon-pull { display: block; min-width: 225px; }
+.gachapon-hint { font-size: .82rem; margin: 9px 0 0; }
+.gachapon-copy .form-error { font-size: .86rem; max-width: 300px; }
+.gachapon-machine { position: relative; width: 235px; height: 295px; justify-self: center; transform-origin: 50% 88%; }
+.gachapon-globe {
+  position: absolute; z-index: 1; top: 4px; left: 25px; width: 185px; height: 156px;
+  border: 8px solid #4d96ff; border-radius: 48% 48% 35% 35%; overflow: hidden;
+  background: linear-gradient(145deg, rgba(255,255,255,.86), rgba(196,224,255,.66));
+  box-shadow: inset 12px 9px 0 rgba(255,255,255,.52), 0 7px 0 #2c6fc0;
+}
+.gachapon-globe::after { content: ''; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 20%, rgba(255,255,255,.72) 21% 27%, transparent 28%); }
+.machine-capsule { position: absolute; width: 43px; height: 34px; border-radius: 50%; border: 3px solid rgba(45,42,74,.55); transform: rotate(15deg); }
+.machine-capsule::after { content: ''; position: absolute; left: -2px; right: -2px; top: 45%; border-top: 3px solid rgba(45,42,74,.55); }
+.machine-capsule.c1 { left: 8px; bottom: 7px; background: linear-gradient(#ff6b6b 50%, #fff 50%); }
+.machine-capsule.c2 { left: 53px; bottom: 13px; background: linear-gradient(#ffd23f 50%, #fff 50%); transform: rotate(-12deg); }
+.machine-capsule.c3 { right: 9px; bottom: 5px; background: linear-gradient(#6bcb77 50%, #fff 50%); transform: rotate(22deg); }
+.machine-capsule.c4 { left: 25px; bottom: 45px; background: linear-gradient(#c77dff 50%, #fff 50%); transform: rotate(-25deg); }
+.machine-capsule.c5 { right: 35px; bottom: 45px; background: linear-gradient(#ff9f1c 50%, #fff 50%); }
+.gachapon-body {
+  position: absolute; top: 144px; left: 15px; width: 205px; height: 127px; border: 6px solid #2d2a4a;
+  border-radius: 25px 25px 18px 18px; background: linear-gradient(145deg, #ff817c, #f34e58); box-shadow: inset 8px 7px rgba(255,255,255,.2);
+}
+.gachapon-coin-slot { position: absolute; left: 21px; top: 24px; border: 3px solid #2d2a4a; border-radius: 7px; background: #fff; padding: 5px 7px; font-size: .52rem; font-weight: 900; }
+.gachapon-knob { position: absolute; left: 77px; top: 17px; width: 55px; height: 55px; border: 5px solid #2d2a4a; border-radius: 50%; background: #ffd23f; display: grid; place-items: center; }
+.gachapon-knob span { width: 41px; height: 12px; border: 3px solid #2d2a4a; border-radius: 8px; background: #fff; }
+.gachapon-chute { position: absolute; left: 64px; bottom: 10px; width: 79px; height: 35px; border: 5px solid #2d2a4a; border-bottom-width: 9px; border-radius: 10px 10px 17px 17px; background: #29273d; }
+.gachapon-foot { position: absolute; bottom: 5px; left: 35px; width: 165px; height: 25px; border: 5px solid #2d2a4a; border-radius: 8px; background: #4d96ff; }
+.gachapon-machine.shaking { animation: machine-shake .12s linear infinite; }
+.gachapon-machine.shaking .gachapon-knob { animation: knob-turn .55s ease-in-out infinite; }
+.gachapon-machine.shaking .machine-capsule { animation: capsule-jiggle .25s ease-in-out infinite alternate; }
+@keyframes machine-shake { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-2deg) translateX(-2px); } 75% { transform: rotate(2deg) translateX(2px); } }
+@keyframes knob-turn { 50% { transform: rotate(155deg); } }
+@keyframes capsule-jiggle { to { translate: 3px -4px; rotate: 8deg; } }
+
+.gachapon-prize-capsule { position: absolute; z-index: 6; left: 89px; bottom: 18px; width: 58px; height: 58px; animation: capsule-pop 1s cubic-bezier(.2,.9,.25,1) forwards; }
+.capsule-top, .capsule-bottom { position: absolute; left: 0; width: 58px; height: 29px; border: 4px solid #2d2a4a; }
+.capsule-top { top: 0; background: #ffd23f; border-radius: 40px 40px 6px 6px; animation: capsule-open-top .35s .62s ease-out forwards; }
+.capsule-bottom { bottom: 0; background: #fff; border-radius: 6px 6px 40px 40px; animation: capsule-open-bottom .35s .62s ease-out forwards; }
+@keyframes capsule-pop { 0% { transform: translateY(0) scale(.55) rotate(0); } 48% { transform: translateY(-155px) scale(1) rotate(420deg); } 75% { transform: translateY(-112px) scale(1.08) rotate(500deg); } 100% { transform: translateY(-122px) scale(1.15) rotate(520deg); } }
+@keyframes capsule-open-top { to { transform: translate(-17px,-25px) rotate(-35deg); opacity: .2; } }
+@keyframes capsule-open-bottom { to { transform: translate(17px,25px) rotate(35deg); opacity: .2; } }
+
+.gachapon-result-backdrop { position: fixed; z-index: 130; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(45,42,74,.58); backdrop-filter: blur(4px); }
+.gachapon-result { width: min(100%, 370px); border: 5px solid var(--accent2); border-radius: 28px; background: #fff; padding: 28px; text-align: center; box-shadow: 0 24px 65px rgba(45,42,74,.36); animation: gacha-reveal .48s cubic-bezier(.22,1.45,.36,1); }
+.gachapon-result.rarity-rare { border-color: #8c5bd8; background: linear-gradient(145deg, #fff, #f1e8ff); }
+.gachapon-result.rarity-legendary { border-color: #f1b900; background: radial-gradient(circle at 50% 30%, #fffbe0, #fff 65%); box-shadow: 0 0 38px rgba(255,203,40,.7), 0 24px 65px rgba(45,42,74,.36); animation: gacha-reveal .48s cubic-bezier(.22,1.45,.36,1), legendary-glow 1.4s ease-in-out infinite alternate; }
+.gachapon-result-sparkles { color: #f2b700; font-size: 1.3rem; letter-spacing: 10px; }
+.gachapon-result-emoji { width: 120px; height: 100px; margin: 3px auto; display: grid; place-items: center; animation: bounce .7s ease-in-out infinite alternate; }
+.gachapon-result-emoji .accessory-icon { width: 100%; height: 100%; }
+.gachapon-result h2 { font-size: 1.8rem; margin: 8px 0 2px; }
+.gachapon-result p { color: var(--ink-soft); font-weight: 700; line-height: 1.45; }
+@keyframes gacha-reveal { from { transform: scale(.5) rotate(-8deg); opacity: 0; } }
+@keyframes legendary-glow { to { box-shadow: 0 0 60px rgba(255,203,40,.95), 0 24px 65px rgba(45,42,74,.36); } }
+
+/* ── Maskot-garderobe ──────────────────────────────────────────────────── */
+.wardrobe-heading {
+  display: flex; align-items: center; gap: 16px; position: sticky; top: 8px; z-index: 4;
+  background: var(--panel); border-radius: 18px; padding: 8px 14px 8px 8px; margin: -8px -14px 14px -8px;
+  box-shadow: 0 6px 16px rgba(45,42,74,.1);
+}
+.wardrobe-heading h2 { margin-top: 3px; }
+.wardrobe-heading-text { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; flex: 1; min-width: 0; }
+.wardrobe-count { background: #eaf2ff; color: #286dbf; font-size: .82rem; font-weight: 900; padding: 7px 13px; border-radius: 999px; white-space: nowrap; }
+.wardrobe-preview {
+  flex-shrink: 0; width: 74px; height: 74px; border-radius: 50%; background: linear-gradient(160deg, #fff9cf, #fff4bd);
+  display: grid; place-items: center; overflow: hidden;
+}
+.wardrobe-preview .mascot-dog { width: 92px; height: auto; transform: translateY(10px); filter: none; }
+.wardrobe-intro { margin: 5px 0 20px; color: var(--ink-soft); font-weight: 650; }
+.wardrobe-groups { display: grid; gap: 23px; }
+.wardrobe-group h3 { font-size: 1.05rem; margin-bottom: 9px; }
+.wardrobe-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.wardrobe-item { position: relative; min-height: 144px; border: 3px solid transparent; border-radius: 18px; background: #f7f7fb; color: var(--ink); padding: 16px 8px 11px; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: transform .15s, border-color .15s, box-shadow .15s, background .15s; }
+.wardrobe-item.unlocked:hover:not(:disabled) { transform: translateY(-4px); box-shadow: 0 8px 18px rgba(45,42,74,.13); }
+.wardrobe-item.locked { opacity: .58; cursor: not-allowed; filter: grayscale(1); }
+.wardrobe-item.equipped { border-color: var(--green); background: #eafaef; box-shadow: 0 0 0 3px rgba(107,203,119,.16); }
+.wardrobe-item.rarity-rare.unlocked:not(.equipped) { background: #f7f1ff; }
+.wardrobe-item.rarity-legendary.unlocked:not(.equipped) { background: linear-gradient(145deg, #fff, #fff4c8); }
+.wardrobe-item.rarity-legendary.unlocked { box-shadow: inset 0 0 0 1px #f1cb55; }
+.wardrobe-item-icon { font-size: 2.7rem; line-height: 1.1; display: grid; place-items: center; width: 62px; height: 52px; }
+.accessory-icon { width: 100%; height: 100%; overflow: visible; }
+.wardrobe-item-name { font-size: .9rem; font-weight: 900; margin: 8px 0 5px; }
+.wardrobe-equipped-badge { position: absolute; top: 7px; right: 7px; background: var(--green); color: #fff; border-radius: 999px; padding: 3px 9px; font-size: .68rem; font-weight: 900; }
+.rarity-badge { display: inline-block; border-radius: 999px; background: #e8e7ef; color: var(--ink-soft); padding: 3px 9px; font-size: .65rem; line-height: 1.2; font-weight: 900; text-transform: uppercase; letter-spacing: .5px; }
+.rarity-badge.rarity-rare { background: #e9dcff; color: #6f36af; }
+.rarity-badge.rarity-legendary { color: #755200; background: linear-gradient(90deg, #ffe16a, #fff3ad); box-shadow: 0 0 8px rgba(255,190,0,.45); }
+.wardrobe-changing { position: absolute; inset: auto 0 5px; font-size: .68rem; color: var(--accent2); font-weight: 900; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot-stage-star, .gachapon-machine.shaking, .gachapon-machine.shaking .gachapon-knob,
+  .gachapon-machine.shaking .machine-capsule, .gachapon-prize-capsule, .capsule-top, .capsule-bottom,
+  .gachapon-result, .gachapon-result-emoji { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}
+
 /* ── Milepæl-feiring (confetti-kort) ─────────────────────────────────────── */
 .celebrate-card.milestone-pop { max-width: 380px; border-top: 8px solid var(--gull2); }
 .celebrate-card.milestone-pop.tier-bronse { border-top-color: var(--bronse1); }
@@ -553,4 +690,27 @@ label input:focus { border-color: var(--accent2); }
   .diploma-name { font-size: 1.8rem; }
   .diploma-stats { flex-wrap: wrap; }
   .diploma-stat { max-width: none; }
+
+  .mascot-page { gap: 14px; }
+  .mascot-hero { grid-template-columns: 1fr; min-height: 0; padding-bottom: 8px; text-align: center; }
+  .mascot-title { padding: 0 4px; }
+  .mascot-title p { margin-inline: auto; }
+  .mascot-dog-stage { min-height: 250px; margin-top: 4px; }
+  .mascot-dog { width: 235px; }
+  .gachapon-card { grid-template-columns: 1fr; gap: 10px; text-align: center; padding-bottom: 10px; }
+  .gachapon-copy { padding: 0; }
+  .gachapon-pull { min-width: 0; width: 100%; }
+  .gachapon-copy .form-error { margin-inline: auto; }
+  .gachapon-machine { transform: scale(.82); margin: -17px 0 -22px; }
+  .gachapon-machine.shaking { animation-name: machine-shake-mobile; }
+  @keyframes machine-shake-mobile { 0%,100% { transform: scale(.82) rotate(0); } 25% { transform: scale(.82) rotate(-2deg) translateX(-2px); } 75% { transform: scale(.82) rotate(2deg) translateX(2px); } }
+  .wardrobe-heading { padding: 6px 10px 6px 6px; gap: 10px; top: 4px; }
+  .wardrobe-heading-text { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .wardrobe-preview { width: 52px; height: 52px; }
+  .wardrobe-preview .mascot-dog { width: 64px; transform: translateY(7px); }
+  .wardrobe-grid { gap: 8px; }
+  .wardrobe-item { min-height: 127px; padding: 14px 4px 9px; }
+  .wardrobe-item-icon { font-size: 2.25rem; width: 52px; height: 44px; }
+  .wardrobe-item-name { font-size: .75rem; }
+  .wardrobe-equipped-badge { top: 5px; right: 5px; }
 }

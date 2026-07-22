@@ -6,7 +6,14 @@ CREATE TABLE IF NOT EXISTS children (
   name TEXT NOT NULL,
   age INTEGER NOT NULL,
   avatar TEXT NOT NULL DEFAULT '🐣',
-  created_at TEXT NOT NULL
+  created_at TEXT NOT NULL,
+  -- Maskot (hunden Sommer): tilbehør skaffes via gachapon-kapsler, betalt med
+  -- mynter avledet fra XP (se src/shared/game.js). dog_owned/dog_equipped er
+  -- JSON-lister/objekter; dog_coins_spent er totalt myntforbruk, brukt til å
+  -- regne ut mynt-saldo.
+  dog_owned TEXT NOT NULL DEFAULT '[]',
+  dog_equipped TEXT NOT NULL DEFAULT '{}',
+  dog_coins_spent INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS readings (

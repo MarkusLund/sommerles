@@ -26,4 +26,7 @@ export const api = {
   addReading: (id, reading) =>
     req(`/api/children/${id}/readings`, { method: 'POST', body: JSON.stringify(reading) }),
   deleteReading: (id) => req(`/api/readings/${id}`, { method: 'DELETE' }),
+  pullGacha: (id) => req(`/api/children/${id}/gacha`, { method: 'POST' }),
+  equipMascotItem: (id, slot, itemId) =>
+    req(`/api/children/${id}`, { method: 'PATCH', body: JSON.stringify({ dogEquipped: { slot, itemId } }) }),
 }

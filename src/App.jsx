@@ -6,6 +6,7 @@ import Header from './components/Header.jsx'
 import RegisterReading from './components/RegisterReading.jsx'
 import Trophies from './components/Trophies.jsx'
 import Avatars from './components/Avatars.jsx'
+import Mascot from './components/Mascot.jsx'
 import Diplomas from './components/Diplomas.jsx'
 import ReadingLog from './components/ReadingLog.jsx'
 import Confetti from './components/Confetti.jsx'
@@ -123,6 +124,10 @@ export default function App() {
     await refreshChildren()
   }
 
+  function handleChildUpdate(updatedChild) {
+    setChildren((current) => current.map((child) => (child.id === updatedChild.id ? updatedChild : child)))
+  }
+
   async function handleDeleteReading(id) {
     await api.deleteReading(id)
     await refreshChildren()
@@ -178,6 +183,9 @@ export default function App() {
         <button className={view === 'premier' ? 'active' : ''} onClick={() => setView('premier')}>
           🎖️ Premier
         </button>
+        <button className={view === 'maskot' ? 'active' : ''} onClick={() => setView('maskot')}>
+          🐶 Maskot
+        </button>
         <button className={view === 'avatarer' ? 'active' : ''} onClick={() => setView('avatarer')}>
           🎭 Avatarer
         </button>
@@ -192,6 +200,7 @@ export default function App() {
         )}
         {view === 'lesing' && <RegisterReading onAdd={handleAddReading} />}
         {view === 'premier' && <Diplomas child={active} />}
+        {view === 'maskot' && <Mascot child={active} onChildUpdate={handleChildUpdate} />}
         {view === 'avatarer' && (
           <Avatars child={active} onPick={handlePickAvatar} />
         )}

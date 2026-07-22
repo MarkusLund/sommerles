@@ -5,6 +5,12 @@ import {
   levelFromXp,
   milestoneSnapshots,
   AVATARS,
+  coinsFromXp,
+  rollGachaItem,
+  mascotItemById,
+  MASCOT_SLOTS,
+  MASCOT_ITEMS,
+  GACHA_COST,
 } from '../src/shared/game.js'
 import { searchBooks } from './books.js'
 import { safeEqual, createSession, clearSession, readSession } from './auth.js'
@@ -53,17 +59,31 @@ async function readingsForChild(db, childId) {
   return results.map((r) => ({ ...r, finished: !!r.finished }))
 }
 
-// Beregn avledet tilstand (XP, level, låst-opp avatar).
+function parseJsonColumn(raw, fallback) {
+  try {
+    const parsed = JSON.parse(raw)
+    return parsed ?? fallback
+  } catch {
+    return fallback
+  }
+}
+
+// Beregn avledet tilstand (XP, level, låst-opp avatar, maskot-mynter).
 async function decorateChild(db, child) {
   const readings = await readingsForChild(db, child.id)
   const stats = statsFromReadings(readings)
   const level = levelFromXp(stats.totalXp)
+  const owned = parseJsonColumn(child.dog_owned, [])
+  const equipped = parseJsonColumn(child.dog_equipped, {})
+  const coins = Math.max(0, coinsFromXp(stats.totalXp) - (child.dog_coins_spent || 0))
+  const { dog_owned, dog_equipped, dog_coins_spent, ...rest } = child
   return {
-    ...child,
+    ...rest,
     stats,
     level,
     diplomas: milestoneSnapshots(readings),
     unlockedAvatars: AVATARS.filter((a) => a.level <= level.level).map((a) => a.emoji),
+    mascot: { owned, equipped, coins, gachaCost: GACHA_COST },
   }
 }
 
@@ -124,8 +144,63 @@ app.patch('/api/children/:id', async (c) => {
   if (body.age != null && Number.isFinite(parseInt(body.age, 10))) {
     await db.prepare('UPDATE children SET age = ? WHERE id = ?').bind(parseInt(body.age, 10), id).run()
   }
+
+  // Ta på/av et maskot-tilbehør i en gitt slot. `null` tar av tilbehøret.
+  if (body.dogEquipped != null) {
+    const { slot, itemId } = body.dogEquipped
+    const slotDef = MASCOT_SLOTS.find((s) => s.id === slot)
+    if (!slotDef) return c.json({ error: 'Ukjent slot' }, 400)
+    const owned = parseJsonColumn(child.dog_owned, [])
+    if (itemId != null) {
+      const item = mascotItemById(itemId)
+      if (!item || item.slot !== slot) return c.json({ error: 'Ukjent tilbehør' }, 400)
+      if (!owned.includes(itemId)) return c.json({ error: 'Tilbehøret er ikke ditt ennå' }, 403)
+    }
+    const equipped = parseJsonColumn(child.dog_equipped, {})
+    if (itemId == null) delete equipped[slot]
+    else equipped[slot] = itemId
+    await db
+      .prepare('UPDATE children SET dog_equipped = ? WHERE id = ?')
+      .bind(JSON.stringify(equipped), id)
+      .run()
+  }
+
   const updated = await db.prepare('SELECT * FROM children WHERE id = ?').bind(id).first()
   return c.json(await decorateChild(db, updated))
+})
+
+// Mat mynter inn i gachapon-maskinen: trekk et tilfeldig tilbehør barnet
+// ikke allerede eier.
+app.post('/api/children/:id/gacha', async (c) => {
+  const db = c.env.DB
+  const id = c.req.param('id')
+  const child = await db.prepare('SELECT * FROM children WHERE id = ?').bind(id).first()
+  if (!child) return c.json({ error: 'Fant ikke barnet' }, 404)
+
+  const owned = parseJsonColumn(child.dog_owned, [])
+  if (owned.length >= MASCOT_ITEMS.length) {
+    return c.json({ error: 'Du har allerede samlet alt tilbehør! 🎉' }, 400)
+  }
+
+  const readings = await readingsForChild(db, id)
+  const stats = statsFromReadings(readings)
+  const coins = coinsFromXp(stats.totalXp) - (child.dog_coins_spent || 0)
+  if (coins < GACHA_COST) return c.json({ error: 'Ikke nok mynter ennå' }, 400)
+
+  const itemId = rollGachaItem(owned)
+  const newOwned = [...owned, itemId]
+  const newCoinsSpent = (child.dog_coins_spent || 0) + GACHA_COST
+
+  await db
+    .prepare('UPDATE children SET dog_owned = ?, dog_coins_spent = ? WHERE id = ?')
+    .bind(JSON.stringify(newOwned), newCoinsSpent, id)
+    .run()
+
+  const updated = await db.prepare('SELECT * FROM children WHERE id = ?').bind(id).first()
+  return c.json({
+    item: mascotItemById(itemId),
+    child: await decorateChild(db, updated),
+  })
 })
 
 app.delete('/api/children/:id', async (c) => {

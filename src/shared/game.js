@@ -262,3 +262,77 @@ export function evaluateTrophies(stats) {
     }
   })
 }
+
+// ── Maskot: hunden Sommer og gachapon-maskinen ────────────────────────────
+// Barnet tjener mynter av XP (avledet, aldri lagret) og mater dem inn i en
+// kapselmaskin (à la Astro's Playroom). Hvert trekk koster GACHA_COST mynter
+// og gir et tilfeldig tilbehør barnet ikke allerede eier – aldri en dublett.
+export const XP_PER_COIN = 10
+export const GACHA_COST = 30
+
+export function coinsFromXp(totalXp) {
+  return Math.floor(Math.max(0, totalXp || 0) / XP_PER_COIN)
+}
+
+// Fire slots på hunden. `anchor` er posisjon (senter, i % av SVG-ens
+// viewBox) der tilbehøret tegnes – brukt av <Dog>-komponenten på klienten.
+export const MASCOT_SLOTS = [
+  { id: 'head', name: 'Hode' },
+  { id: 'face', name: 'Ansikt' },
+  { id: 'body', name: 'Kropp' },
+  { id: 'neck', name: 'Hals' },
+]
+
+export const RARITY_ORDER = ['common', 'rare', 'legendary']
+export const RARITY_LABEL = { common: 'Vanlig', rare: 'Sjelden', legendary: 'Episk' }
+export const RARITY_WEIGHTS = { common: 0.55, rare: 0.32, legendary: 0.13 }
+
+export const MASCOT_ITEMS = [
+  { id: 'nisselue', slot: 'head', name: 'Nisselue', emoji: '🎅', rarity: 'common' },
+  { id: 'sjorover_hatt', slot: 'head', name: 'Sjørøverhatt', emoji: '🏴‍☠️', rarity: 'rare' },
+  { id: 'kongekrone', slot: 'head', name: 'Kongekrone', emoji: '👑', rarity: 'legendary' },
+
+  { id: 'solbriller', slot: 'face', name: 'Solbriller', emoji: '😎', rarity: 'common' },
+  { id: 'hjertebriller', slot: 'face', name: 'Hjertebriller', emoji: '😍', rarity: 'rare' },
+  { id: 'stjernebriller', slot: 'face', name: 'Stjernebriller', emoji: '🤩', rarity: 'legendary' },
+
+  { id: 'rockevest', slot: 'body', name: 'Rockevest', emoji: '🎸', rarity: 'common' },
+  { id: 'superkappe', slot: 'body', name: 'Superkappe', emoji: '🦸', rarity: 'rare' },
+  { id: 'kongekappe', slot: 'body', name: 'Kongekappe', emoji: '🥇', rarity: 'legendary' },
+
+  { id: 'sloyfe', slot: 'neck', name: 'Sløyfe', emoji: '🎀', rarity: 'common' },
+  { id: 'bandana', slot: 'neck', name: 'Bandana', emoji: '🧣', rarity: 'rare' },
+  { id: 'gullkjede', slot: 'neck', name: 'Gullkjede', emoji: '⭐', rarity: 'legendary' },
+]
+
+export function mascotItemById(id) {
+  return MASCOT_ITEMS.find((i) => i.id === id) || null
+}
+
+export function mascotItemsForSlot(slot) {
+  return MASCOT_ITEMS.filter((i) => i.slot === slot)
+}
+
+// Trekker et tilfeldig tilbehør barnet ikke allerede eier (aldri en dublett).
+// Tar imot to [0,1)-tall (default Math.random) slik at trekket kan testes
+// deterministisk – én for sjeldenhets-tier, én for hvilken vare innenfor den
+// tieren. Returnerer null hvis alt tilbehør allerede er samlet.
+export function rollGachaItem(ownedIds = [], rand1 = Math.random(), rand2 = Math.random()) {
+  const unowned = MASCOT_ITEMS.filter((i) => !ownedIds.includes(i.id))
+  if (unowned.length === 0) return null
+
+  let acc = 0
+  const tiersLeft = RARITY_ORDER.filter((t) => unowned.some((i) => i.rarity === t))
+  const totalWeight = tiersLeft.reduce((sum, t) => sum + RARITY_WEIGHTS[t], 0)
+  let tier = tiersLeft[tiersLeft.length - 1]
+  for (const t of tiersLeft) {
+    acc += RARITY_WEIGHTS[t] / totalWeight
+    if (rand1 < acc) {
+      tier = t
+      break
+    }
+  }
+  const pool = unowned.filter((i) => i.rarity === tier)
+  const idx = Math.min(pool.length - 1, Math.floor(rand2 * pool.length))
+  return pool[idx].id
+}
