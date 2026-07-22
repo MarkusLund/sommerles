@@ -192,13 +192,19 @@ export function AccessoryIcon({ item }) {
   )
 }
 
-export default function Dog({ equipped = {} }) {
+// Full hund: "0 0 200 220". Portrett (brukt i små runde forhåndsvisninger):
+// beskjærer tett rundt hode/ører/hatt, slik at ansiktet fyller sirkelen pent
+// i stedet for å bli klippet av midt i haken.
+export const DOG_VIEWBOX = '0 0 200 220'
+export const DOG_PORTRAIT_VIEWBOX = '18 8 164 152'
+
+export default function Dog({ equipped = {}, viewBox = DOG_VIEWBOX }) {
   const safeEquipped = Object.fromEntries(
     Object.entries(equipped || {}).filter(([slot, id]) => KNOWN_SLOTS.has(slot) && KNOWN_ITEMS.has(id)),
   )
 
   return (
-    <svg className="mascot-dog" viewBox="0 0 200 220" role="img" aria-label="Sommer, maskothunden med tilbehør">
+    <svg className="mascot-dog" viewBox={viewBox} role="img" aria-label="Sommer, maskothunden med tilbehør">
       <GradientDefs />
 
       <ellipse cx="100" cy="207" rx="69" ry="10" fill="#2d2a4a" opacity=".13" />

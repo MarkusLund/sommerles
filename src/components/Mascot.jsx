@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { api } from '../api.js'
 import { MASCOT_ITEMS, MASCOT_SLOTS, RARITY_LABEL, mascotItemsForSlot } from '../shared/game.js'
-import Dog, { AccessoryIcon } from './Dog.jsx'
+import Dog, { AccessoryIcon, DOG_PORTRAIT_VIEWBOX } from './Dog.jsx'
 import Gachapon from './Gachapon.jsx'
 
 export default function Mascot({ child, onChildUpdate }) {
@@ -44,7 +44,7 @@ export default function Mascot({ child, onChildUpdate }) {
       <section className="card mascot-wardrobe">
         <div className="wardrobe-heading">
           <div className="wardrobe-preview" aria-hidden="true">
-            <Dog equipped={mascot.equipped} />
+            <Dog equipped={mascot.equipped} viewBox={DOG_PORTRAIT_VIEWBOX} />
           </div>
           <div className="wardrobe-heading-text">
             <div><span className="mascot-eyebrow">Miks og match</span><h2>🧳 Garderoben</h2></div>

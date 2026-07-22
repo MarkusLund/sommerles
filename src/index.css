@@ -549,7 +549,7 @@ label input:focus { border-color: var(--accent2); }
   flex-shrink: 0; width: 74px; height: 74px; border-radius: 50%; background: linear-gradient(160deg, #fff9cf, #fff4bd);
   display: grid; place-items: center; overflow: hidden;
 }
-.wardrobe-preview .mascot-dog { width: 92px; height: auto; transform: translateY(10px); filter: none; }
+.wardrobe-preview .mascot-dog { width: 100%; height: 100%; filter: none; }
 .wardrobe-intro { margin: 5px 0 20px; color: var(--ink-soft); font-weight: 650; }
 .wardrobe-groups { display: grid; gap: 23px; }
 .wardrobe-group h3 { font-size: 1.05rem; margin-bottom: 9px; }
@@ -707,7 +707,6 @@ label input:focus { border-color: var(--accent2); }
   .wardrobe-heading { padding: 6px 10px 6px 6px; gap: 10px; top: 4px; }
   .wardrobe-heading-text { align-items: flex-start; flex-direction: column; gap: 4px; }
   .wardrobe-preview { width: 52px; height: 52px; }
-  .wardrobe-preview .mascot-dog { width: 64px; transform: translateY(7px); }
   .wardrobe-grid { gap: 8px; }
   .wardrobe-item { min-height: 127px; padding: 14px 4px 9px; }
   .wardrobe-item-icon { font-size: 2.25rem; width: 52px; height: 44px; }
