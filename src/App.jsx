@@ -124,6 +124,11 @@ export default function App() {
     await refreshChildren()
   }
 
+  async function handlePickAvatarBg(colorId) {
+    await api.updateChild(activeId, { avatarBg: colorId })
+    await refreshChildren()
+  }
+
   function handleChildUpdate(updatedChild) {
     setChildren((current) => current.map((child) => (child.id === updatedChild.id ? updatedChild : child)))
   }
@@ -202,7 +207,7 @@ export default function App() {
         {view === 'premier' && <Diplomas child={active} />}
         {view === 'maskot' && <Mascot child={active} onChildUpdate={handleChildUpdate} />}
         {view === 'avatarer' && (
-          <Avatars child={active} onPick={handlePickAvatar} />
+          <Avatars child={active} onPick={handlePickAvatar} onPickBg={handlePickAvatarBg} />
         )}
       </main>
     </div>

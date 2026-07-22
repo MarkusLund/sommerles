@@ -52,7 +52,11 @@ input { font-family: inherit; }
   transition: transform 0.15s ease, box-shadow 0.15s ease; color: var(--ink);
 }
 .profile-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 16px 36px rgba(45,42,74,0.22); cursor: pointer; }
-.profile-avatar { font-size: 3.4rem; line-height: 1; }
+.profile-avatar {
+  font-size: 2.8rem; line-height: 1; width: 84px; height: 84px; margin: 0 auto;
+  border-radius: 50%; display: grid; place-items: center;
+}
+.profile-card.add .profile-avatar { background: none; }
 .profile-name { font-weight: 800; font-size: 1.25rem; margin-top: 10px; }
 .profile-meta { color: var(--ink-soft); font-size: 0.9rem; margin-top: 2px; }
 .profile-xp {
@@ -293,10 +297,23 @@ label input:focus { border-color: var(--accent2); }
 .avatar-card.unlocked:hover { transform: translateY(-4px); cursor: pointer; }
 .avatar-card.locked { opacity: 0.7; cursor: not-allowed; }
 .avatar-card.selected { border-color: var(--green); background: #eafaef; }
-.avatar-emoji { font-size: 3rem; }
+.avatar-emoji {
+  font-size: 2.6rem; width: 68px; height: 68px; margin: 0 auto; border-radius: 50%;
+  display: grid; place-items: center;
+}
 .avatar-name { font-weight: 800; margin-top: 6px; }
 .avatar-level { font-size: 0.78rem; color: var(--ink-soft); font-weight: 700; }
 .avatar-tag { position: absolute; top: 8px; right: 8px; background: var(--green); color: #fff; font-size: 0.7rem; font-weight: 800; padding: 2px 8px; border-radius: 999px; }
+
+.bg-picker-title { margin-top: 28px; }
+.bg-swatch-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+.bg-swatch {
+  position: relative; width: 52px; height: 52px; border-radius: 50%; border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(45,42,74,0.18); transition: transform 0.15s;
+}
+.bg-swatch:hover { transform: scale(1.08); }
+.bg-swatch.selected { border-color: var(--ink); box-shadow: 0 0 0 3px var(--green); }
+.bg-swatch-check { color: #fff; font-weight: 900; font-size: 1.3rem; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
 
 /* ── Reading log ─────────────────────────────────────── */
 .empty { color: var(--ink-soft); font-weight: 600; }

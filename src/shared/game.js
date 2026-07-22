@@ -207,6 +207,25 @@ export function avatarByEmoji(emoji) {
   return AVATARS.find((a) => a.emoji === emoji) || AVATARS[0]
 }
 
+// ── Avatar-bakgrunnsfarge ─────────────────────────────────────────────────
+// Barnet kan style avatar-sirkelen sin med en fargerik gradient. 'sol' er
+// standardvalget og matcher appens opprinnelige gul/oransje gradient, så
+// eksisterende profiler ser akkurat like ut helt til noen velger en ny farge.
+export const AVATAR_BG_COLORS = [
+  { id: 'sol', label: 'Sol', from: '#ffd23f', to: '#ff8c42' },
+  { id: 'himmel', label: 'Himmel', from: '#8ec5ff', to: '#4d96ff' },
+  { id: 'skog', label: 'Skog', from: '#b6f2c0', to: '#3fb35f' },
+  { id: 'bringebar', label: 'Bringebær', from: '#ff9fc7', to: '#ff5b8f' },
+  { id: 'lilla', label: 'Lilla', from: '#d9baff', to: '#9b5de5' },
+  { id: 'korall', label: 'Korall', from: '#ffb199', to: '#ff6b6b' },
+  { id: 'natt', label: 'Natt', from: '#6f7bd4', to: '#2d2a6a' },
+  { id: 'mynte', label: 'Mynte', from: '#8ee4d0', to: '#2bb89e' },
+]
+
+export function avatarBgById(id) {
+  return AVATAR_BG_COLORS.find((c) => c.id === id) || AVATAR_BG_COLORS[0]
+}
+
 // ── Troféer ─────────────────────────────────────────────────────────────────
 // Hvert trofé har et mål (goal) og en funksjon som henter fremgang fra statistikk.
 export const TROPHIES = [

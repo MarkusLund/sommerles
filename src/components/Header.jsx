@@ -1,4 +1,4 @@
-import { AVATARS, nextMilestone, milestoneForLevel } from '../shared/game.js'
+import { AVATARS, nextMilestone, milestoneForLevel, avatarBgById } from '../shared/game.js'
 
 function fmtTime(min) {
   const h = Math.floor(min / 60)
@@ -11,6 +11,7 @@ export default function Header({ child, onBack, onShowPremier }) {
   const nextAvatar = AVATARS.find((a) => a.level === level.level + 1)
   const here = milestoneForLevel(level.level)
   const next = nextMilestone(level.level)
+  const bg = avatarBgById(child.avatar_bg)
 
   return (
     <header className="header">
@@ -21,7 +22,10 @@ export default function Header({ child, onBack, onShowPremier }) {
       </div>
 
       <div className="header-main">
-        <div className={`header-avatar ${here ? `milestone-glow tier-${here.tier}` : ''}`}>
+        <div
+          className={`header-avatar ${here ? `milestone-glow tier-${here.tier}` : ''}`}
+          style={{ background: `linear-gradient(160deg, ${bg.from}, ${bg.to})` }}
+        >
           {child.avatar}
         </div>
         <div className="header-info">

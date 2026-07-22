@@ -11,6 +11,7 @@ import {
   MASCOT_SLOTS,
   MASCOT_ITEMS,
   GACHA_COST,
+  AVATAR_BG_COLORS,
 } from '../src/shared/game.js'
 import { searchBooks } from './books.js'
 import { safeEqual, createSession, clearSession, readSession } from './auth.js'
@@ -137,6 +138,12 @@ app.patch('/api/children/:id', async (c) => {
     if (!avatarDef) return c.json({ error: 'Ukjent avatar' }, 400)
     if (avatarDef.level > level) return c.json({ error: 'Avataren er ikke låst opp ennå' }, 403)
     await db.prepare('UPDATE children SET avatar = ? WHERE id = ?').bind(body.avatar, id).run()
+  }
+  if (body.avatarBg != null) {
+    if (!AVATAR_BG_COLORS.some((c) => c.id === body.avatarBg)) {
+      return c.json({ error: 'Ukjent bakgrunnsfarge' }, 400)
+    }
+    await db.prepare('UPDATE children SET avatar_bg = ? WHERE id = ?').bind(body.avatarBg, id).run()
   }
   if (body.name != null && body.name.trim()) {
     await db.prepare('UPDATE children SET name = ? WHERE id = ?').bind(body.name.trim(), id).run()

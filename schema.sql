@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS children (
   name TEXT NOT NULL,
   age INTEGER NOT NULL,
   avatar TEXT NOT NULL DEFAULT '🐣',
+  avatar_bg TEXT NOT NULL DEFAULT 'sol',
   created_at TEXT NOT NULL,
   -- Maskot (hunden Sommer): tilbehør skaffes via gachapon-kapsler, betalt med
   -- mynter avledet fra XP (se src/shared/game.js). dog_owned/dog_equipped er

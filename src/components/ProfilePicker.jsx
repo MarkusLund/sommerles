@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { avatarByEmoji, levelFromXp } from '../shared/game.js'
+import { avatarByEmoji, levelFromXp, avatarBgById } from '../shared/game.js'
 
 export default function ProfilePicker({ children, onOpen, onCreate, onDelete, onLogout }) {
   const [adding, setAdding] = useState(false)
@@ -42,6 +42,7 @@ export default function ProfilePicker({ children, onOpen, onCreate, onDelete, on
       <div className="profile-grid">
         {children.map((c) => {
           const av = avatarByEmoji(c.avatar)
+          const bg = avatarBgById(c.avatar_bg)
           return (
             <div key={c.id} className="profile-card" onClick={() => onOpen(c.id)}>
               <button
@@ -54,7 +55,12 @@ export default function ProfilePicker({ children, onOpen, onCreate, onDelete, on
               >
                 ✕
               </button>
-              <div className="profile-avatar">{c.avatar}</div>
+              <div
+                className="profile-avatar"
+                style={{ background: `linear-gradient(160deg, ${bg.from}, ${bg.to})` }}
+              >
+                {c.avatar}
+              </div>
               <div className="profile-name">{c.name}</div>
               <div className="profile-meta">{c.age} år · Level {c.level.level}</div>
               <div className="profile-xp">{c.stats.totalXp} XP</div>
